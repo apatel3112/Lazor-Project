@@ -6,7 +6,6 @@ Created on Fri Oct 25 14:55:52 2019
 @author: madelinenoble
 """
 
-
 class block():
  
     def __init__(self, block_type, position):
