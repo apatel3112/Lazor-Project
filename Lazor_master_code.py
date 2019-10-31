@@ -103,6 +103,19 @@ class block():
 
         return new_x_dir,new_y_dir , delete_after_contact
 
+    def lazor_contact_tuple(m,b,pos_x,pos_y):
+        b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 1
+        b[((pos_y-1)*2)][1+((pos_x-1)*2)] = 1  
+        b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 1
+        b[2+((pos_y-1)*2)][1+((pos_x-1)*2)] = 1
+
+        #element wise product to find overlapping indices of lazor and block
+        m = np.transpose(m)
+        matrix_prod = np.multiply(m,b)
+        
+     
+        return [(j,i) for j in len(matrix_prod[0]) for i in len(matrix_prod) if matrix_prod[j][i] == 2]
+
 
 def load_file(file_name):
     pass
