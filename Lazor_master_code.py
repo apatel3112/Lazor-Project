@@ -5,6 +5,9 @@ Created on Fri Oct 25 14:55:52 2019
 
 @author: madelinenoble
 """
+
+# lazor list = list of tuples
+
 import numpy as np
 def read_file(file_name):
     Grid = []
@@ -60,10 +63,6 @@ def read_file(file_name):
             
         except IndexError:
             continue
-    
-
-        
-        
         
     Blocks = [A, B, C]
 
@@ -72,32 +71,35 @@ def read_file(file_name):
 
 
 class block():
-    "top" = 1
-    "bottom" = 2
-    "left" = 3
-    "right" = 4
+
     def __init__(self, block_type, position):
         self.block_type = block_type
         self.position = position
 
-    def move(self, new_position, m, b, pos_x, pos_y):
+    def move(self, new_position, m, b, pos_x, pos_y, lazor_path_list, lazor_dir_list):
         self.position = new_position
-        self.lazor_contact_tuple(m,b,pos_x,pos_y)
+        
+        for i in range(len(lazor_list)):
+        contact_position = self.lazor_contact_tuple(m,b,pos_x,pos_y)
 
-        new_dir = self.add_to_lazor_path("top", ((2, 3), (-1, 1)))
+        new_dir = self.add_to_lazor_path(contact_position, ((2, 3), (-1, 1)))
         return new_dir
 
     def add_to_lazor_path(self, contact_position, lazor_contact_tuple):
+        # "top" = 1
+        # "bottom" = 2
+        # "left" = 3
+        # "right" = 4
+        
         x_dir, y_dir = lazor_contact_tuple[1]
 
         if self.block_type == "opaque":
             new_x_dir, new_y_dir = 0, 0
             delete_after_contact = True
-
-        elif: 
-            if contact_position == "top" or contact_position == "bottom":
+        else: 
+            if contact_position == 1 or contact_position == 2:
                 new_x_dir, new_y_dir = x_dir, y_dir*-1
-            if contact_position == "left" or contact_position == "right":
+            if contact_position == 3 or contact_position == 4:
                 new_x_dir, new_y_dir = x_dir*-1, y_dir 
             if self.block_type == "refract":
                 delete_after_contact = False
@@ -105,8 +107,12 @@ class block():
                 delete_after_contact = True
 
         return new_x_dir,new_y_dir , delete_after_contact
+    
 
-    def lazor_contact_tuple(self, m,b,pos_x,pos_y,x_dir,y_dir):
+# in order to find the direction that the lazor is going when it hits the block
+# we need to find the index in the lazor path list and look at that index in the lazor direction list
+    def lazor_contact_tuple(self, m,b,pos_x,pos_y, lazor_path_list, lazor_dir_list):
+
         b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 3 #left
         b[((pos_y-1)*2)][1+((pos_x-1)*2)] =  1 #top
         b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 4 #right 
@@ -118,6 +124,7 @@ class block():
 
         contact_pos = [[j,i] for j in len(matrix_prod[0]) for i in len(matrix_prod) if matrix_prod[j][i] >= 1]
         
+        # correlate the contact_pos with the direction in the dir list
         if x_dir == 1:
             rev = False
         else:
@@ -191,12 +198,15 @@ def solve(file_name):
         print(b)
         matrix_prod = np.multiply(m,b)
         print(matrix_prod)
+        
 
+        b1 = block("reflect", (3,0))
+        print(b1.move((3,4), m, b, pos_x, pos_y, lazor_pos_list, lazor_dir_list))
+       
+    
+        
 if __name__ == "__main__":
+    solve("fiilename")
     
-    b1 = block("reflect", (3,0))
-    print(b1.move((2, 2), ((2, 3), (1, 1))))
-    print(ans)
-    
-    Grid, Block, Targets, Lazors = read_file('yarn_5.bff')
+    #Grid, Block, Targets, Lazors = read_file('yarn_5.bff')
 
