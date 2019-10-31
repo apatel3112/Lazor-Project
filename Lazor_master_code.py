@@ -72,13 +72,17 @@ def read_file(file_name):
 
 
 class block():
-
+    "top" = 1
+    "bottom" = 2
+    "left" = 3
+    "right" = 4
     def __init__(self, block_type, position):
         self.block_type = block_type
         self.position = position
 
-    def move(self, new_position, lazor_path):
+    def move(self, new_position, m, b, pos_x, pos_y):
         self.position = new_position
+        self.lazor_contact_tuple(m,b,pos_x,pos_y)
 
         new_dir = self.add_to_lazor_path("top", ((2, 3), (-1, 1)))
         return new_dir
@@ -100,22 +104,25 @@ class block():
             if self.block_type == "reflect":
                 delete_after_contact = True
 
-
         return new_x_dir,new_y_dir , delete_after_contact
 
-    def lazor_contact_tuple(m,b,pos_x,pos_y):
-        b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 1
-        b[((pos_y-1)*2)][1+((pos_x-1)*2)] = 1  
-        b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 1
-        b[2+((pos_y-1)*2)][1+((pos_x-1)*2)] = 1
+
+    def lazor_contact_tuple(self, m,b,pos_x,pos_y,x_dir,y_dir):
+        b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 3 #left
+        b[((pos_y-1)*2)][1+((pos_x-1)*2)] =  1 #top
+        b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 4 #right 
+        b[2+((pos_y-1)*2)][1+((pos_x-1)*2)] = 2 #bottom
+
 
         #element wise product to find overlapping indices of lazor and block
         m = np.transpose(m)
         matrix_prod = np.multiply(m,b)
         
-     
-        return [(j,i) for j in len(matrix_prod[0]) for i in len(matrix_prod) if matrix_prod[j][i] == 2]
-
+        contact_pos = [[j,i] for j in len(matrix_prod[0]) for i in len(matrix_prod) if matrix_prod[j][i] >= 1]
+        
+        if len(contact_pos) > 1:
+            #determine first contact position
+           
 
 def load_file(file_name):
     pass
