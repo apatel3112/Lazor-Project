@@ -5,7 +5,7 @@ Created on Fri Oct 25 14:55:52 2019
 
 @author: madelinenoble
 """
-
+import numpy as np
 def read_file(file_name):
     Grid = []
     A= 0
@@ -106,7 +106,63 @@ def load_file(file_name):
 
 
 def solve(file_name):
-    pass 
+    
+        m = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0,0]]
+        m = np.array(m)
+        
+        #set lazors and targets
+        #switch i and j indices and then transpose to get accurate result
+        m[7][2] = 2
+        m[3][0] = 1
+        m[4][3] = 1
+        m[2][5] = 1
+        m[4][7] = 1
+        
+        targets = [[3,0],[4,3],[2,5],[4,7]]
+        
+        #direction of lazor
+        [i,j] = [1,-1]
+        count_i = 2
+        count_j = 7
+        lazor_path = []
+        
+        #lazor path on matrix
+        while max(count_i,count_j) != 9:
+            m[count_i][count_j] = 2       
+            count_i += i
+            count_j += j
+            lazor_path.append([i,j])
+            
+        #create identical empty block matrix
+        b = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0,0]]
+        b = np.array(b)
+        
+        
+        #grid size = 4x4 for pilot case
+        #define blocks - refract
+        #run loop till all 1's arent 2's
+        #dot product of OG matrix and block matrix
+        
+        for k in range(3):
+            for pos_x in range(4):
+             for pos_y in range(4):
+                pos_x = 4
+                pos_y = 1
+                b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 1
+                b[((pos_y-1)*2)][1+((pos_x-1)*2)] = 1  
+                b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 1
+                b[2+((pos_y-1)*2)][1+((pos_x-1)*2)] = 1
+        
+        #check wether lazor hits or not
+        m = np.transpose(m)
+        print(m)
+        print(b)
+        matrix_prod = np.multiply(m,b)
+        print(matrix_prod)
 
 if __name__ == "__main__":
     
