@@ -56,7 +56,7 @@ def read_file(file_name):
                     else:
                         d4 = int(a[8])    
                 
-                L.append((int(a[2]), int(a[4]), d3, d4))
+                L.append([int(a[2]), int(a[4]), d3, d4])
             
         except IndexError:
             continue
@@ -68,6 +68,7 @@ def read_file(file_name):
     Blocks = [A, B, C]
 
     return Grid, Blocks, P, L
+
 
 
 class block():
@@ -171,5 +172,7 @@ if __name__ == "__main__":
     
     b1 = block("reflect", (3,0))
     print(b1.move((2, 2), ((2, 3), (1, 1))))
-    #print(ans)
+    print(ans)
+    
+    Grid, Block, Targets, Lazors = read_file('yarn_5.bff')
 
