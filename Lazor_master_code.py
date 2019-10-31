@@ -160,7 +160,6 @@ def solve(file_name):
                 b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 1
                 b[2+((pos_y-1)*2)][1+((pos_x-1)*2)] = 1
         
-        
         #check wether lazor hits or not
         m = np.transpose(m)
         print(m)
