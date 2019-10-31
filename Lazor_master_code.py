@@ -6,6 +6,69 @@ Created on Fri Oct 25 14:55:52 2019
 @author: madelinenoble
 """
 
+def read_file(file_name):
+    Grid = []
+    A= 0
+    B = 0
+    C = 0
+    P = []
+    L = []
+    
+    f = open(file_name, "r")
+    lines = f.readlines()
+    for i in range(len(lines)):
+        a = lines[i].strip('\n')
+
+        if a == "GRID START":
+            b = i+1
+            j = lines[b].strip('\n')
+            while j != "GRID STOP":
+                r = j[::2]
+                Grid.append(r)
+                b = b+1
+                j = lines[b].strip('\n')
+
+    for i in range(b+1, len(lines)):
+        a = lines[i].strip('\n')
+        try:
+            if a[0] == "A":
+                A = int(a[2])
+            
+            elif a[0] == "B":
+                B = int(a[2])
+            elif a[0] == "C":
+                C = int(a[2])
+                
+            elif a[0] == "P":
+                P.append((int(a[2]), int(a[4])))
+                
+            elif a[0] == "L":
+                if a[6] == "-":
+                    d3 = -1*int(a[7])
+                    if a[9] == "-":
+                        d4 = -1*int(a[10])
+                    else:
+                        d4 = int(a[9])
+                else:
+                    d3 = int(a[6])
+                    if a[8] == "-":
+                        d4 = -1*int(a[9])
+                    else:
+                        d4 = int(a[8])    
+                
+                L.append((int(a[2]), int(a[4]), d3, d4))
+            
+        except IndexError:
+            continue
+    
+
+        
+        
+        
+    Blocks = [A, B, C]
+
+    return Grid, Blocks, P, L
+
 
 class block():
 
