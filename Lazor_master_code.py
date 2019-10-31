@@ -87,17 +87,20 @@ class block():
 
         if self.block_type == "opaque":
             new_x_dir, new_y_dir = 0, 0
+            delete_after_contact = True
 
-        if self.block_type == "reflect":
+        elif: 
             if contact_position == "top" or contact_position == "bottom":
                 new_x_dir, new_y_dir = x_dir, y_dir*-1
             if contact_position == "left" or contact_position == "right":
-                new_x_dir, new_y_dir = x_dir*-1, y_dir
+                new_x_dir, new_y_dir = x_dir*-1, y_dir 
+            if self.block_type == "refract":
+                delete_after_contact = False
+            if self.block_type == "reflect":
+                delete_after_contact = True
 
-        if self.block_type == "refract":
-            new_x_dir, new_y_dir = x_dir*-1, y_dir*-1
 
-        return new_x_dir,new_y_dir
+        return new_x_dir,new_y_dir , delete_after_contact
 
 
 def load_file(file_name):
