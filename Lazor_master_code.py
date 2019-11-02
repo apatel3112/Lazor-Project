@@ -61,13 +61,25 @@ def read_file(file_name):
         except IndexError:
             continue
     
+    r = len(Grid[0])*2 + 1
+    l = len(Grid)*2 + 1
+    
+    Lazor_Path = [(L[0][0], L[0][1])]
+    Lazor_Dir = [(L[0][2], L[0][3])]  
 
-        
-        
+    while Lazor_Path[-1][0] < r and Lazor_Path[-1][1] < l:
+        x = Lazor_Path[-1][0] + L[0][2]
+        y = Lazor_Path[-1][1] + L[0][3]
+        new_path = (x,y)
+        new_dir = (L[0][2], L[0][3])
+        Lazor_Path. append(new_path)
+        Lazor_Dir.append(new_dir)
+           
+            
         
     Blocks = [A, B, C]
 
-    return Grid, Blocks, P, L
+    return Grid, Blocks, P, Lazor_Path, Lazor_Dir
 
 
 
