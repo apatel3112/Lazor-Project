@@ -23,7 +23,7 @@ def read_file(file_name):
             b = i+1
             j = lines[b].strip('\n')
             while j != "GRID STOP":
-                r = j[::2]
+                r = j.replace(" ", "")
                 Grid.append(r)
                 b = b+1
                 j = lines[b].strip('\n')
@@ -56,30 +56,43 @@ def read_file(file_name):
                     else:
                         d4 = int(a[8])    
                 
-                L.append([int(a[2]), int(a[4]), d3, d4])
+                L.append((int(a[2]), int(a[4]), d3, d4))
             
         except IndexError:
             continue
     
+        
     r = len(Grid[0])*2 + 1
     l = len(Grid)*2 + 1
     
-    Lazor_Path = [(L[0][0], L[0][1])]
-    Lazor_Dir = [(L[0][2], L[0][3])]  
-
-    while Lazor_Path[-1][0] < r and Lazor_Path[-1][1] < l:
-        x = Lazor_Path[-1][0] + L[0][2]
-        y = Lazor_Path[-1][1] + L[0][3]
-        new_path = (x,y)
-        new_dir = (L[0][2], L[0][3])
-        Lazor_Path. append(new_path)
-        Lazor_Dir.append(new_dir)
+    Lazor_Path = []
+    Lazor_Dir = []
+    
+    for i in range(len(L)):
+        
+        Lazor_Path_i = [(L[i][0], L[i][1])]
+        Lazor_Dir_i = [(L[i][2], L[i][3])]  
+    
+        while 0 <= Lazor_Path_i[-1][0] <= r and 0 <= Lazor_Path_i[-1][1] <= l:
+            x = Lazor_Path_i[-1][0] + L[i][2]
+            y = Lazor_Path_i[-1][1] + L[i][3]
+            new_path = (x,y)
+            new_dir = (L[i][2], L[i][3])
+            Lazor_Path_i.append(new_path)
+            Lazor_Dir_i.append(new_dir)
+        
+        Lazor_Path_i.pop()
+        Lazor_Dir_i.pop()
+        Lazor_Path.append(Lazor_Path_i)
+        Lazor_Dir.append(Lazor_Dir_i)
+        
            
             
         
     Blocks = [A, B, C]
 
     return Grid, Blocks, P, Lazor_Path, Lazor_Dir
+        
 
 
 
