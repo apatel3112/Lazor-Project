@@ -80,7 +80,7 @@ def read_file(file_name):
             new_dir = (L[i][2], L[i][3])
             Lazor_Path_i.append(new_path)
             Lazor_Dir_i.append(new_dir)
-        
+
         Lazor_Path_i.pop()
         Lazor_Dir_i.pop()
         Lazor_Path.append(Lazor_Path_i)
@@ -96,7 +96,7 @@ def read_file(file_name):
     count_i = L[0]
     count_j = L[1]
     lazor_path = []
-        
+
     #Add lazor path on matrix m
     while max(count_i,count_j) != 9:
         m[count_i][count_j] = 2       
