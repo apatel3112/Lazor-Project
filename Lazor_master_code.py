@@ -80,7 +80,7 @@ def read_file(file_name):
             new_dir = (L[i][2], L[i][3])
             Lazor_Path_i.append(new_path)
             Lazor_Dir_i.append(new_dir)
-        
+
         Lazor_Path_i.pop()
         Lazor_Dir_i.pop()
         Lazor_Path.append(Lazor_Path_i)
@@ -96,7 +96,7 @@ def read_file(file_name):
     count_i = L[0]
     count_j = L[1]
     lazor_path = []
-        
+
     #Add lazor path on matrix m
     while max(count_i,count_j) != 9:
         m[count_i][count_j] = 2       
@@ -118,41 +118,61 @@ def read_file(file_name):
 
 
 class block():
-    "top" = 1
-    "bottom" = 2
-    "left" = 3
-    "right" = 4
+
     def __init__(self, block_type, position):
         self.block_type = block_type
         self.position = position
 
-    def move(self, new_position, m, b, pos_x, pos_y):
-        self.position = new_position
-        self.lazor_contact_tuple(m,b,pos_x,pos_y)
 
-        new_dir = self.add_to_lazor_path("top", ((2, 3), (-1, 1)))
+    def move(self, new_position, m, b, pos_x, pos_y, lazor_path_list, lazor_dir_list):
+        self.position = new_position
+
+        for i in range(len(lazor_path_list)):
+            lazor_num = i
+            contact_position, x_dir, y_dir, contact_index = self.lazor_contact_tuple(m,b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num)
+
+        new_dir = self.add_to_lazor_path(contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index)
         return new_dir
 
-    def add_to_lazor_path(self, contact_position, lazor_contact_tuple):
-        x_dir, y_dir = lazor_contact_tuple[1]
+
+    def add_to_lazor_path(self, contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index):
+        # "top" = 1
+        # "bottom" = 2
+        # "left" = 3
+        # "right" = 4
 
         if self.block_type == "opaque":
             new_x_dir, new_y_dir = 0, 0
             delete_after_contact = True
-
-        elif: 
-            if contact_position == "top" or contact_position == "bottom":
+        else: 
+            if contact_position == 1 or contact_position == 2:
                 new_x_dir, new_y_dir = x_dir, y_dir*-1
-            if contact_position == "left" or contact_position == "right":
+            if contact_position == 3 or contact_position == 4:
                 new_x_dir, new_y_dir = x_dir*-1, y_dir 
             if self.block_type == "refract":
                 delete_after_contact = False
             if self.block_type == "reflect":
                 delete_after_contact = True
+        
+        print(lazor_dir_list)       
+        if delete_after_contact:
+            del lazor_dir_list[lazor_num][contact_index+1:len(lazor_dir_list[lazor_num])+1]
+            del lazor_path_list[lazor_num][contact_index+1:len(lazor_path_list[lazor_num])+1]
+            # we should probably have another functiont that produces the rest of the lists
+            lazor_dir_list.append()
+            lazor_path_list.append()
+        else:
+            # we just add a new row for the existing lazorr
+            lazor_dir_list.append()
+            lazor_path_list.append()
 
-        return new_x_dir,new_y_dir , delete_after_contact
+        return lazor_dir_list, lazor_path_list
+    
 
-    def lazor_contact_tuple(self, m,b,pos_x,pos_y,x_dir,y_dir):
+# in order to find the direction that the lazor is going when it hits the block
+# we need to find the index in the lazor path list and look at that index in the lazor direction list
+    def lazor_contact_tuple(self, m,b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num):
+
         b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 3 #left
         b[((pos_y-1)*2)][1+((pos_x-1)*2)] =  1 #top
         b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 4 #right 
@@ -161,17 +181,27 @@ class block():
         #element wise product to find overlapping indices of lazor and block
         m = np.transpose(m)
         matrix_prod = np.multiply(m,b)
-
-        contact_pos = [[j,i] for j in len(matrix_prod[0]) for i in len(matrix_prod) if matrix_prod[j][i] >= 1]
         
-        if x_dir == 1:
+        if np.count_nonzero(matrix_prod) >= 1:
+            contact_pos = [[j,i] for j in len(matrix_prod[0]) for i in len(matrix_prod) if matrix_prod[j][i] >= 1]
+        else:
+            contact_pos = []
+        # contact_pos = [1,1]
+        i = 0
+        
+        while lazor_path_list[lazor_num][i] != contact_pos:
+            contact_index = i
+            i += 1
+        
+        x_dir, y_dir = lazor_dir_list[lazor_num][i]
+        
+        if x_dir == 1:            
             rev = False
         else:
             rev = True
-        
         first_contact_pos = sorted(contact_pos, key=lambda l:l[y_dir], reverse=rev)
-        
-        return b[first_contact_pos[1]][first_contact_pos[0]]
+        first_contact_pos = 1
+        return first_contact_pos, x_dir, y_dir, contact_index
             
 
 def load_file(file_name):
