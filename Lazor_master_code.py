@@ -40,7 +40,7 @@ def read_file(file_name):
                 C = int(a[2])
                 
             elif a[0] == "P":
-                P.append((int(a[2]), int(a[4])))
+                P.append([int(a[2]), int(a[4])])
                 
             elif a[0] == "L":
                 if a[6] == "-":
@@ -86,12 +86,33 @@ def read_file(file_name):
         Lazor_Path.append(Lazor_Path_i)
         Lazor_Dir.append(Lazor_Dir_i)
         
-           
+    row = len(Grid)
+    col = len(Grid[0])
+    m = np.zeros((row,col),dtype=int)
+    b = np.zeros((row,col),dtype=int)
+    
+    #lazor direction
+    [i,j] = [L[2],L[3]]
+    count_i = L[0]
+    count_j = L[1]
+    lazor_path = []
+        
+    #Add lazor path on matrix m
+    while max(count_i,count_j) != 9:
+        m[count_i][count_j] = 2       
+        count_i += i
+        count_j += j
+        lazor_path.append([i,j])
+    
+    #Add targets to matrix m
+    P = list(P)
+    for i in range(len(P)):
+        m[P[i][0]][P[i][1]] = 1       
             
         
     Blocks = [A, B, C]
 
-    return Grid, Blocks, P, Lazor_Path, Lazor_Dir
+    return Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b
         
 
 
