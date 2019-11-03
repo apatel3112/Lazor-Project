@@ -118,7 +118,7 @@ def read_file(file_name):
 
 
 class block():
-    
+
     def __init__(self, block_type, position):
         self.block_type = block_type
         self.position = position
@@ -166,7 +166,7 @@ class block():
             lazor_dir_list.append()
             lazor_path_list.append()
 
-        return lazor_path_list, lazor_dir_list
+        return lazor_dir_list, lazor_path_list
     
 
 # in order to find the direction that the lazor is going when it hits the block
