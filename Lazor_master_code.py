@@ -72,7 +72,30 @@ def read_file(file_name):
     col = len(Grid[0])
     m = np.zeros((2*row+1,2*col+1),dtype=int)
     b = np.zeros((2*row+1,2*col+1),dtype=int)
+    
+    #read fixed blocks and non permitted positions
+    #fixed blocks corresponds to pos_x-1 and pos_y-1
+    fixed_blocks = [[i,j] for i in range(len(Grid[0])) for j in range(len(Grid)) if Grid[j][i] == 'B']
 
+    #adds fixed blocks to matrix
+    for x in range(len(fixed_blocks)):
+        b[1+((fixed_blocks[x][1])*2)][((fixed_blocks[x][0])*2)] = 1 #left
+        b[((fixed_blocks[x][1])*2)][1+((fixed_blocks[x][0])*2)] =  1 #top
+        b[1+((fixed_blocks[x][1])*2)][2+((fixed_blocks[x][0])*2)] = 1 #right 
+        b[2+((fixed_blocks[x][1])*2)][1+((fixed_blocks[x][0])*2)] = 1
+
+    #add possions not accessible to matrix
+    not_allowed = [[i,j] for i in range(len(Grid[0])) for j in range(len(Grid)) if Grid[j][i] == 'x']
+
+    for y in range(len(not_allowed)):
+        b[1+((not_allowed[y][1])*2)][((not_allowed[y][0])*2)] = -1 #left
+        b[((not_allowed[y][1])*2)][1+((not_allowed[y][0])*2)] =  -1 #top
+        b[1+((not_allowed[y][1])*2)][2+((not_allowed[y][0])*2)] = -1 #right 
+        b[2+((not_allowed[y][1])*2)][1+((not_allowed[y][0])*2)] = -1
+
+    #return vector of positions x and y not allowed to place blocks
+    not_allowed.extend(fixed_blocks)
+    
     #create vectors for x and y directions if more than 1 Lazor
     j = []
     k = []
@@ -100,15 +123,14 @@ def read_file(file_name):
     for i in range(len(L)):
         Lazor_Path_i.append([count_j[i],count_k[i]])
         Lazor_Dir_i.append([j[i],k[i]])
-        try:
-            while 0 < min_pos[i] < (2*matrix_dim[min_index]+1):
-                m[count_k[i]][count_j[i]] = 2       
-                count_j[i] += j[i]
-                count_k[i] += k[i]
-                Lazor_Path_i.append([count_j[i],count_k[i]])
-                Lazor_Dir_i.append([j[i],k[i]])
-        except IndexError:
-            continue
+
+        while 0 <= count_k[i] < row and 0 <= count_j[i] < col:
+            m[count_k[i]][count_j[i]] = 2       
+            count_j[i] += j[i]
+            count_k[i] += k[i]
+            Lazor_Path_i.append([count_j[i],count_k[i]])
+            Lazor_Dir_i.append([j[i],k[i]])
+       
         Lazor_Dir_i.pop()
         Lazor_Path_i.pop()    
          
@@ -127,7 +149,7 @@ def read_file(file_name):
         
     Blocks = [A, B, C]
 
-    return Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b
+    return Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed
         
 
 
