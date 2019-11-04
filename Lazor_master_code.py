@@ -86,23 +86,42 @@ def read_file(file_name):
         Lazor_Path.append(Lazor_Path_i)
         Lazor_Dir.append(Lazor_Dir_i)
         
+    #create empty matrices based on grid size
     row = len(Grid)
     col = len(Grid[0])
-    m = np.zeros((row,col),dtype=int)
-    b = np.zeros((row,col),dtype=int)
+    m = np.zeros((2*row+1,2*col+1),dtype=int)
+    b = np.zeros((2*row+1,2*col+1),dtype=int)
+    
+    #create vectors for x and y directions if more than 1 Lazor
+    j = []
+    k = []
+    count_j = []
+    count_k = []
     
     #lazor direction
-    [i,j] = [L[2],L[3]]
-    count_i = L[0]
-    count_j = L[1]
-    lazor_path = []
-
+    for i in range(len(L)):
+        j.append(L[i][2])
+        k.append(L[i][3])
+        count_j.append(L[i][0])
+        count_k.append(L[i][1])
+    
+          
+    #determine smaller dimension if asymmetric matrix
+    matrix_dim = [row,col]
+    min_index = matrix_dim.index(min(matrix_dim))
+    if min_index == 0:
+        min_pos = count_k
+    else:
+        min_pos = count_j
+    
     #Add lazor path on matrix m
-    while max(count_i,count_j) != 9:
-        m[count_i][count_j] = 2       
-        count_i += i
-        count_j += j
-        lazor_path.append([i,j])
+    for i in range(len(L)):
+    
+        while -1 < min_pos[i] < (2*matrix_dim[min_index]+1):
+            m[count_k[i]][count_j[i]] = 2       
+            count_j[i] += j[i]
+            count_k[i] += k[i]
+        
     
     #Add targets to matrix m
     P = list(P)
@@ -210,42 +229,6 @@ def load_file(file_name):
 
 
 def solve(file_name):
-    
-        m = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0,0,0]]
-        m = np.array(m)
-        
-        #set lazors and targets
-        #switch i and j indices and then transpose to get accurate result
-        m[7][2] = 2
-        m[3][0] = 1
-        m[4][3] = 1
-        m[2][5] = 1
-        m[4][7] = 1
-        
-        targets = [[3,0],[4,3],[2,5],[4,7]]
-        
-        #direction of lazor
-        [i,j] = [1,-1]
-        count_i = 2
-        count_j = 7
-        lazor_path = []
-        
-        #lazor path on matrix
-        while max(count_i,count_j) != 9:
-            m[count_i][count_j] = 2       
-            count_i += i
-            count_j += j
-            lazor_path.append([i,j])
-            
-        #create identical empty block matrix
-        b = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0,0,0]]
-        b = np.array(b)
-        
-        
         #grid size = 4x4 for pilot case
         #define blocks - refract
         #run loop till all 1's arent 2's
