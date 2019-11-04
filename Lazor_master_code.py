@@ -62,49 +62,30 @@ def read_file(file_name):
             continue
     
         
-    r = len(Grid[0])*2 + 1
-    l = len(Grid)*2 + 1
-    
     Lazor_Path = []
-    Lazor_Dir = []
-    
-    for i in range(len(L)):
-        
-        Lazor_Path_i = [(L[i][0], L[i][1])]
-        Lazor_Dir_i = [(L[i][2], L[i][3])]  
-    
-        while 0 <= Lazor_Path_i[-1][0] <= r and 0 <= Lazor_Path_i[-1][1] <= l:
-            x = Lazor_Path_i[-1][0] + L[i][2]
-            y = Lazor_Path_i[-1][1] + L[i][3]
-            new_path = (x,y)
-            new_dir = (L[i][2], L[i][3])
-            Lazor_Path_i.append(new_path)
-            Lazor_Dir_i.append(new_dir)
+    Lazor_Dir = []      
+    Lazor_Path_i = []
+    Lazor_Dir_i = [] 
 
-        Lazor_Path_i.pop()
-        Lazor_Dir_i.pop()
-        Lazor_Path.append(Lazor_Path_i)
-        Lazor_Dir.append(Lazor_Dir_i)
-        
     #create empty matrices based on grid size
-    row = len(Grid)
-    col = len(Grid[0])
+    row = 4
+    col = 4
     m = np.zeros((2*row+1,2*col+1),dtype=int)
     b = np.zeros((2*row+1,2*col+1),dtype=int)
-    
+
     #create vectors for x and y directions if more than 1 Lazor
     j = []
     k = []
     count_j = []
     count_k = []
-    
+
     #lazor direction
     for i in range(len(L)):
         j.append(L[i][2])
         k.append(L[i][3])
         count_j.append(L[i][0])
         count_k.append(L[i][1])
-    
+
           
     #determine smaller dimension if asymmetric matrix
     matrix_dim = [row,col]
@@ -113,14 +94,28 @@ def read_file(file_name):
         min_pos = count_k
     else:
         min_pos = count_j
-    
+
+    print(min_pos)
     #Add lazor path on matrix m
     for i in range(len(L)):
-    
-        while -1 < min_pos[i] < (2*matrix_dim[min_index]+1):
-            m[count_k[i]][count_j[i]] = 2       
-            count_j[i] += j[i]
-            count_k[i] += k[i]
+        Lazor_Path_i.append([count_j[i],count_k[i]])
+        Lazor_Dir_i.append([k[i],k[i]])
+        try:
+            while 0 < min_pos[i] < (2*matrix_dim[min_index]+1):
+                m[count_k[i]][count_j[i]] = 2       
+                count_j[i] += j[i]
+                count_k[i] += k[i]
+                Lazor_Path_i.append([count_j[i],count_k[i]])
+                Lazor_Dir_i.append([j[i],k[i]])
+        except IndexError:
+            continue
+            
+         
+        Lazor_Path.append(Lazor_Path_i)
+        Lazor_Dir.append(Lazor_Dir_i)
+        
+        Lazor_Path_i = []
+        Lazor_dir_i = []
         
     
     #Add targets to matrix m
