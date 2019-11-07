@@ -248,20 +248,20 @@ class block():
             contact_pos = [[i, j] for i in range(len(matrix_prod[0])) for j in range(len(matrix_prod)) if matrix_prod[j][i] >= 1]
         else:
             contact_pos = []
-        #print(contact_pos)
-        i = 0
-        x_dir, y_dir = lazor_dir_list[lazor_num][i]
-        if y_dir == 1:
-            rev = False
+        
+        #print(lazor_path_list[lazor_num])
+
+        if len(contact_pos) > 0:  
+            for i in lazor_path_list[lazor_num]:
+                for j in contact_pos:
+                    if i == j:
+                        first_contact_pos = j
+                        contact_index = lazor_path_list[lazor_num].index(first_contact_pos)
+                        x_dir, y_dir = lazor_dir_list[lazor_num][contact_index]
+                        break
+                    break
         else:
-            rev = True
-
-        first_contact_pos = sorted(contact_pos, key=lambda l: l[x_dir], reverse=rev)[0]
-
-        contact_index = 0
-        while lazor_path_list[lazor_num][i] != first_contact_pos:
-            contact_index = i
-            i += 1
+            first_contact_pos = [0,0]
 
         print(first_contact_pos)
         #print(m)
@@ -307,7 +307,7 @@ if __name__ == "__main__":
     
     print(m)
     print('Break')
-    print(b)
+    print(b)    
     print('New Move')
     
     
@@ -316,15 +316,32 @@ if __name__ == "__main__":
     print(m)
     print('Break')
     print(b)
+    print(Lazor_Dir)
+    print(Lazor_Path)
+    print('New Move')
     
     
+    b2 = block("reflect", (2,1))
+    b2.move((2, 3), m, b, 2, 3, Lazor_Path, Lazor_Dir)
+    
+    print(m)
+    print('Break')
+    print(b)
+    print(Lazor_Dir)
+    print(Lazor_Path)
+    print('New Move')
     
     
 # =============================================================================
-#     b2 = block("reflect", (2,1))
-#     b2.move((2, 3), m, b, 2, 3, Lazor_Path, Lazor_Dir)
 #     b3 = block("refract", (3,4))
 #     b3.move((3, 4), m, b, 3,4 , Lazor_Path, Lazor_Dir)
-# 
-    print(Lazor_Dir)
-    print(Lazor_Path)
+#     
+#     print(m)
+#     print('Break')
+#     print(b)
+#     print(Lazor_Dir)
+#     print(Lazor_Path)
+#     print('New Move')
+# =============================================================================
+
+
