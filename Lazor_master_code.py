@@ -72,6 +72,7 @@ def read_file(file_name):
     col = len(Grid[0])
     m = np.zeros((2*row+1,2*col+1),dtype=int)
     b = np.zeros((2*row+1,2*col+1),dtype=int)
+    t = np.zeros((2*row+1,2*col+1),dtype=int)
     
     #read fixed blocks and non permitted positions
     #fixed blocks corresponds to pos_x-1 and pos_y-1
@@ -144,7 +145,7 @@ def read_file(file_name):
     #Add targets to matrix m
     P = list(P)
     for i in range(len(P)):
-        m[P[i][0]][P[i][1]] = 1       
+        t[P[i][1]][P[i][0]] = 1       
             
         
     Blocks = [A, B, C]
@@ -153,6 +154,7 @@ def read_file(file_name):
         
 
 
+used_contact_pos = []
 
 class block():
 
@@ -165,7 +167,7 @@ class block():
 
         for i in range(len(lazor_path_list)):
             lazor_num = i
-            contact_position, x_dir, y_dir, contact_index, contact_side = self.lazor_contact_tuple(m,b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num)      
+            contact_position, x_dir, y_dir, contact_index, contact_side = self.lazor_contact_tuple(m,b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num, used_contact_pos)      
 
         self.add_to_lazor_path(contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side)
 
@@ -216,15 +218,23 @@ class block():
         else:
             lazor_path_list.append(Lazor_Path_i)
             lazor_dir_list.append(Lazor_Dir_i)
-        print(lazor_dir_list)
-        print(lazor_path_list)
+        
+        #update matrix of 2's
+        twos = [[i,j] for i in range(len(m[0])) for j in range(len(m)) if m[j][i] == 2]
+        for i in range(len(twos)):
+            m[twos[i][1]][twos[i][0]] = 0
+        
+        #need separate loops as len(twos) != len(lazor_path_list[lazor_num])
+        for j in range(len(lazor_path_list[lazor_num])):
+            m[lazor_path_list[lazor_num][j][1]][lazor_path_list[lazor_num][j][0]] = 2
+            
         return lazor_dir_list, lazor_path_list
         
 
 
 # in order to find the direction that the lazor is going when it hits the block
 # we need to find the index in the lazor path list and look at that index in the lazor direction list
-    def lazor_contact_tuple(self, m,b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num):
+    def lazor_contact_tuple(self, m,b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num, used_contact_pos):
 
         b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 3 #left
         b[((pos_y-1)*2)][1+((pos_x-1)*2)] =  1 #top
@@ -236,27 +246,29 @@ class block():
         matrix_prod = np.multiply(m,b)
 
         if np.count_nonzero(matrix_prod) >= 1:
-            contact_pos = [[i,j] for i in range(len(matrix_prod[0])) for j in range(len(matrix_prod)) if matrix_prod[j][i] >= 1]
+            contact_pos = [[i,j] for i in range(len(matrix_prod[0])) for j in range(len(matrix_prod)) if matrix_prod[j][i] >= 2]
         else:
             contact_pos = []
-
-        i = 0
-        x_dir, y_dir = lazor_dir_list[lazor_num][i]
+        
+        #make sure contact_pos list doesnt already exist in used contact pos
+        contact_pos = [contact_pos[i] for i in range(len(contact_pos)) if contact_pos[i] not in used_contact_pos]
+        
+        x_dir, y_dir = lazor_dir_list[lazor_num][-1]
+        print(x_dir,y_dir)
         if y_dir == 1:      
             rev = False
         else:
             rev = True
         
+        #add to used_contact_pos list to avoid repeats
         first_contact_pos = sorted(contact_pos, key=lambda l:l[x_dir], reverse=rev)[0]
+        used_contact_pos.append(first_contact_pos)
         
         contact_index = 0
         while lazor_path_list[lazor_num][i] != first_contact_pos:
             contact_index = i
             i += 1
         
-        print(b[first_contact_pos[1]][first_contact_pos[0]])
-        print(m)
-        print(b)
 
         return first_contact_pos, x_dir, y_dir, contact_index, b[first_contact_pos[1]][first_contact_pos[0]]
 
@@ -284,10 +296,8 @@ def solve(file_name):
 
         #check wether lazor hits or not
         m = np.transpose(m)
-        print(m)
-        print(b)
         matrix_prod = np.multiply(m,b)
-        print(matrix_prod)
+
 
 if __name__ == "__main__":
     
