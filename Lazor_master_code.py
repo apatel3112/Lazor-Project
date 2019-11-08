@@ -95,7 +95,6 @@ def read_file(file_name):
     #add possions not accessible to matrix
     not_allowed = [[i,j] for i in range(len(Grid[0])) for j in range(len(Grid)) if Grid[j][i] == 'x']
 
-
     for y in range(len(not_allowed)):
         b[1+((not_allowed[y][1])*2)][((not_allowed[y][0])*2)] = -1 #left
         b[((not_allowed[y][1])*2)][1+((not_allowed[y][0])*2)] =  -1 #top
@@ -291,7 +290,7 @@ def load_file(file_name):
 
 def solve(file_name):
     
-    #Loaf lazor file variables
+    #Load lazor file variables
     Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed = read_file(file_name)
     
     print(not_allowed)
@@ -347,10 +346,3 @@ def solve(file_name):
 
 if __name__ == "__main__":
     solve('mad_1.bff')
-    
-    b1 = block("reflect", (4,1))
-    
-    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed = read_file('/Users/Anusha/Downloads/Handout_Lazor/bff_files/numbered_6.bff')
- 
-    b1.move((4, 1), m, b, 1, 3, Lazor_Path, Lazor_Dir)
-    print(sum(m))
