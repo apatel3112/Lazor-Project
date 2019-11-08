@@ -331,15 +331,35 @@ def solve(file_name):
     for i in not_allowed:
         Blocks_Allowed.remove(i)
 
+    print(Blocks_Allowed)
             
     #define variable that checks if targets have been hit    
     positon_check = np.multiply(m,p)
     
     #if position_check is the same as two times the position matrix loop breaks
-    while position_check != 2*p:
+    while position_check != 2*p:  
+        #create blocks allowed variable    
+        Blocks_Allowed = []
+        for i in range(len(Grid)):
+            for j in range(len(Grid[0])):
+                Blocks_Allowed.append([i+1,j+1])
+                           
+        #edit blocks allowed to exlcude not_allowed blocks
+        for i in not_allowed:
+            Blocks_Allowed.remove(i)
+            
+        
+        #for each block object, randomly choose a position in the grid
         for i in range(len(blocks)):
             pos = random.choice(Blocks_Allowed)
             blocks[i].move((pos[0], pos[1]), m, b, pos[0], pos[1], Lazor_Path, Lazor_Dir)
+            Blocks_Allowed.remove(pos)
+        
+        #with all blokcs position re-calculate the postion check
+        postion_check = np.multiply(m,p)
+        
+        
+        
          
 
 
