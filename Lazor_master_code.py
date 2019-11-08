@@ -157,7 +157,7 @@ def read_file(file_name):
         
     Blocks = [A, B, C]
 
-    return Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed
+    return Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t
         
 
 
@@ -291,9 +291,8 @@ def load_file(file_name):
 def solve(file_name):
     
     #Load lazor file variables
-    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed = read_file(file_name)
-    
-    print(not_allowed)
+    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file(file_name)
+     
     
     #Specify how many of each block type there are
     num_reflect = Blocks[0]
@@ -334,10 +333,10 @@ def solve(file_name):
     print(Blocks_Allowed)
             
     #define variable that checks if targets have been hit    
-    positon_check = np.multiply(m,p)
+    target_check = np.multiply(m,t)
     
     #if position_check is the same as two times the position matrix loop breaks
-    while position_check != 2*p:  
+    while target_check != 2*t:  
         #create blocks allowed variable    
         Blocks_Allowed = []
         for i in range(len(Grid)):
@@ -356,7 +355,7 @@ def solve(file_name):
             Blocks_Allowed.remove(pos)
         
         #with all blokcs position re-calculate the postion check
-        postion_check = np.multiply(m,p)
+        target_check = np.multiply(m,t)
         
         
         
