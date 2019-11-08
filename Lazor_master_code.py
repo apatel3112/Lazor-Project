@@ -117,16 +117,6 @@ def read_file(file_name):
         count_j.append(L[i][0])
         count_k.append(L[i][1])
 
-          
-    #determine smaller dimension if asymmetric matrix
-    matrix_dim = [row,col]
-    min_index = matrix_dim.index(min(matrix_dim))
-    if min_index == 0:
-        min_pos = count_k
-    else:
-        min_pos = count_j
-
-
     #Add lazor path on matrix m
     for i in range(len(L)):
         Lazor_Path_i.append([count_j[i],count_k[i]])
@@ -175,9 +165,10 @@ class block():
         for i in range(len(lazor_path_list)):
             lazor_num = i
             contact_position, x_dir, y_dir, contact_index, contact_side = self.lazor_contact_tuple(m[i],b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num, used_contact_pos)      
-            self.add_to_lazor_path(contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side)
+            if contact_position is not None:
+                lazor_path_list, lazor_dir_list = self.add_to_lazor_path(contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side)
 
-    def add_to_lazor_path(self, contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side):
+    def add_to_lazor_path(self,contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side):
         # "top" = 1
         # "bottom" = 2
         # "left" = 3
@@ -271,17 +262,26 @@ class block():
             rev = True
         
         #add to used_contact_pos list to avoid repeats
-        first_contact_pos = sorted(contact_pos, key=lambda l:l[x_dir], reverse=rev)[0]
-        used_contact_pos.append(first_contact_pos)
+        if len(contact_pos) > 0:
+            first_contact_pos = sorted(contact_pos, key=lambda l:l[x_dir], reverse=rev)[0]
+            used_contact_pos.append(first_contact_pos)
+            
+            contact_index = 0
+            i = 0
+            while lazor_path_list[lazor_num][i] != first_contact_pos:
+                contact_index = i
+                i += 1
+            
+            contact_side = b[first_contact_pos[1]][first_contact_pos[0]]
+        else:
+            first_contact_pos = None
+            contact_index = None
+            contact_side = None
    
-        contact_index = 0
-        i = 0
-        while lazor_path_list[lazor_num][i] != first_contact_pos:
-            contact_index = i
-            i += 1
+ 
         
 
-        return first_contact_pos, x_dir, y_dir, contact_index, b[first_contact_pos[1]][first_contact_pos[0]]
+        return first_contact_pos, x_dir, y_dir, contact_index,contact_side
 
 def load_file(file_name):
     pass
