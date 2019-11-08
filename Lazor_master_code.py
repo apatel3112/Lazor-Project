@@ -6,6 +6,8 @@ Created on Fri Oct 25 14:55:52 2019
 @author: madelinenoble
 """
 import numpy as np
+import random
+
 def read_file(file_name):
     Grid = []
     A= 0
@@ -144,7 +146,7 @@ def read_file(file_name):
         Lazor_Dir.append(Lazor_Dir_i)
         
         Lazor_Path_i = []
-        Lazor_dir_i = []
+        Lazor_Dir_i = []
         
     
     #Add targets to matrix m
@@ -287,21 +289,60 @@ def load_file(file_name):
 
 
 def solve(file_name):
+    
+    #Load lazor file variables
+    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed = read_file(file_name)
+    
+    print(not_allowed)
+    
+    #Specify how many of each block type there are
+    num_reflect = Blocks[0]
+    num_opaque = Blocks[1]
+    num_refract = Blocks[2]
+    
+    
+    #for each block define it as an object and store in blocks variable
+    blocks = []
+    for i in range(1, num_reflect+1):
+        i = block("reflect", (0,0))
+        blocks.append(i)
+        
+    for i in range(1, num_opaque+1):
+        i = block("opaque", (0,0))
+        blocks.append(i)
+    
+    for i in range(1, num_refract+1):
+        i = block("refract", (0,0))
+        blocks.append(i)
+    
+    #edit not allowed to be one the same index as Blocks Allowed
+    for i in range(len(not_allowed)):
+        for j in range(len(not_allowed[0])):
+            new = not_allowed[i][j] + 1
+            not_allowed[i][j] = new
+    
+    #create blocks allowed variable    
+    Blocks_Allowed = []
+    for i in range(len(Grid)):
+        for j in range(len(Grid[0])):
+            Blocks_Allowed.append([i+1,j+1])
+                       
+    #edit blocks allowed to exlcude not_allowed blocks
+    for i in not_allowed:
+        Blocks_Allowed.remove(i)
 
-        #grid size = 4x4 for pilot case
-        #define blocks - refract
-        #run loop till all 1's arent 2's
-        #dot product of OG matrix and block matrix
-        pass
+            
+    #define variable that checks if targets have been hit    
+    positon_check = np.multiply(m,p)
+    
+    #if position_check is the same as two times the position matrix loop breaks
+    while position_check != 2*p:
+        for i in range(len(blocks)):
+            pos = random.choice(Blocks_Allowed)
+            blocks[i].move((pos[0], pos[1]), m, b, pos[0], pos[1], Lazor_Path, Lazor_Dir)
+         
 
 
 
 if __name__ == "__main__":
-    
-    b1 = block("reflect", (4,1))
-    
-    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed = read_file('/Users/Anusha/Downloads/Handout_Lazor/bff_files/numbered_6.bff')
- 
-    b1.move((4, 1), m, b, 1, 3, Lazor_Path, Lazor_Dir)
-    print(sum(m))
-
+    solve('mad_1.bff')
