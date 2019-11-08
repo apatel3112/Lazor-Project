@@ -348,4 +348,9 @@ def solve(file_name):
 if __name__ == "__main__":
     solve('mad_1.bff')
     
-
+    b1 = block("reflect", (4,1))
+    
+    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed = read_file('/Users/Anusha/Downloads/Handout_Lazor/bff_files/numbered_6.bff')
+ 
+    b1.move((4, 1), m, b, 1, 3, Lazor_Path, Lazor_Dir)
+    print(sum(m))
