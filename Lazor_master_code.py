@@ -225,8 +225,8 @@ class block():
             lazor_num = i
             contact_position, x_dir, y_dir, contact_index, contact_side = self.lazor_contact_tuple(m[i],b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num, used_contact_pos)      
             if contact_position is not None:
-                lazor_path_list, lazor_dir_list = self.add_to_lazor_path(contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side)
-
+                Lazor_Path_i, lazor_path_list, lazor_dir_list = self.add_to_lazor_path(contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side)
+        return Lazor_Path_i
     
     #def contact_points(self, lazor_path_list):
         
@@ -321,7 +321,7 @@ class block():
         
         print(m)
         print(lazor_num)
-        return lazor_dir_list, lazor_path_list #branch_1, branch_2, branch_1_dir, branch_2_dir
+        return Lazor_Path_i, lazor_dir_list, lazor_path_list #branch_1, branch_2, branch_1_dir, branch_2_dir
         
 
 
@@ -343,11 +343,11 @@ class block():
         else:
             contact_pos = []
         
-        print('UCP',used_contact_pos)
+
         #make sure contact_pos list doesnt already exist in used contact pos
         contact_pos = [contact_pos[i] for i in range(len(contact_pos)) if contact_pos[i] not in used_contact_pos]
         
-        print('CP',contact_pos)
+
 
         #add to used_contact_pos list to avoid repeats
         if len(contact_pos) > 0:
@@ -378,7 +378,7 @@ class block():
             
         print('FCP',first_contact_pos)
         return first_contact_pos, x_dir, y_dir, contact_index,contact_side
-      
+ 
 def valid_positions(Lazor_path, Blocks_Allowed):
     '''
     This function takes in the lazor path, converts it to blocks
@@ -387,13 +387,11 @@ def valid_positions(Lazor_path, Blocks_Allowed):
     for i in range(len(lazor_path)):
         for j in range(len(lazor_path[i])):
             if lazor_path[i][j][0]%2 == 0: # even
-                print(lazor_path[i][j][1])
                 x = lazor_path[i][j][0]//2
                 y = lazor_path[i][j][1]//2
                 blockList.append([x,y])
                 blockList.append([x-1,y])
             else:
-                print(lazor_path[i][j])
                 x = lazor_path[i][j][0]//2
                 y = lazor_path[i][j][1]//2
                 blockList.append([x,y])
@@ -404,17 +402,16 @@ def valid_positions(Lazor_path, Blocks_Allowed):
     
     #print(common_blocks)
     lazor_blocks = [list(x) for x in set(tuple(x) for x in blockList)]
-    print(lazor_blocks)
     common_blocks = [list(x) for x in set(tuple(x) for x in blockList).intersection(set(tuple(x) for x in Blocks_Allowed))]
-    
+    print("common", common_blocks)
     return common_blocks
-
 
 def solve(file_name):
     
     #Load lazor file variables
     Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file(file_name)
-     
+    
+    fixed_m = m
     
     #Specify how many of each block type there are
     num_reflect = Blocks[0]
@@ -458,7 +455,7 @@ def solve(file_name):
     target_check = np.multiply(m,t)
     
     #if position_check is the same as two times the position matrix loop breaks
-    while target_check != 2*t:  
+    while not np.array_equal(target_check, 2*t):  
         #create blocks allowed variable    
         Blocks_Allowed = []
         for i in range(len(Grid)):
@@ -468,27 +465,28 @@ def solve(file_name):
         #edit blocks allowed to exlcude not_allowed blocks
         for i in not_allowed:
             Blocks_Allowed.remove(i)
-            
-        
+
         #for each block object, randomly choose a position in the grid
+        lazor_path_i = Lazor_Path
         for i in range(len(blocks)):
-            valid_pos = valid_positions(Lazor_Path, Blocks_Allowed)
+            valid_pos = valid_positions(lazor_path_i, Blocks_Allowed)
             pos = random.choice(valid_pos)
-            blocks[i].move((pos[0], pos[1]), m, b, pos[0], pos[1], Lazor_Path, Lazor_Dir)
-            Blocks_Allowed.remove(pos)
+            lazor_path_i = blocks[i].move((pos[0], pos[1]), m, b, pos[0], pos[1], Lazor_Path, Lazor_Dir)
+            Blocks_Allowed.remove(pos)           
+            m = fixed_m
         
         #with all blokcs position re-calculate the postion check
         target_check = np.multiply(m,t)
 
 if __name__ == "__main__":
-
-    b1 = block("refract", (4,1))
-    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file('mad_1.bff')
-    b1.move((4, 1), m, b, 4, 1, Lazor_Path, Lazor_Dir)
-    b2 = block("reflect", (2,3))
-    b2.move((2, 3), m, b, 2, 3, Lazor_Path, Lazor_Dir)
-
-    print(Lazor_Path)
-    print(Lazor_Dir)
+    solve('mad_1.bff')
+#    b1 = block("refract", (4,1))
+#    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file('mad_1.bff')
+#    b1.move((4, 1), m, b, 4, 1, Lazor_Path, Lazor_Dir)
+#    b2 = block("reflect", (2,3))
+#    b2.move((2, 3), m, b, 2, 3, Lazor_Path, Lazor_Dir)
+#
+#    print(Lazor_Path)
+#    print(Lazor_Dir)
 
         
