@@ -6,8 +6,8 @@ Created on Fri Oct 25 14:55:52 2019
 @author: madelinenoble
 """
 import numpy as np
-import random 
-from collections import Counter
+import random
+
 
 def read_file(file_name):
     Grid = []
@@ -104,6 +104,46 @@ def read_file(file_name):
     #return vector of positions x and y not allowed to place blocks
     not_allowed.extend(fixed_blocks)
     
+    Lazor_Path = []
+    Lazor_Dir = []      
+    Lazor_Path_i = []
+    Lazor_Dir_i = [] 
+
+    #create empty matrices based on grid size
+    row = len(Grid)
+    col = len(Grid[0])
+    
+    m = []
+    for i in range(len(L)):
+        c = np.zeros((2*row+1,2*col+1),dtype=int)
+        m.append(c)
+   
+    b = np.zeros((2*row+1,2*col+1),dtype=int)
+    t = np.zeros((2*row+1,2*col+1),dtype=int)
+    
+    #read fixed blocks and non permitted positions
+    #fixed blocks corresponds to pos_x-1 and pos_y-1
+    fixed_blocks = [[i,j] for i in range(len(Grid[0])) for j in range(len(Grid)) if Grid[j][i] == 'B']
+
+    #adds fixed blocks to matrix
+    for x in range(len(fixed_blocks)):
+        b[1+((fixed_blocks[x][1])*2)][((fixed_blocks[x][0])*2)] = 1 #left
+        b[((fixed_blocks[x][1])*2)][1+((fixed_blocks[x][0])*2)] =  1 #top
+        b[1+((fixed_blocks[x][1])*2)][2+((fixed_blocks[x][0])*2)] = 1 #right 
+        b[2+((fixed_blocks[x][1])*2)][1+((fixed_blocks[x][0])*2)] = 1
+
+    #add possions not accessible to matrix
+    not_allowed = [[i,j] for i in range(len(Grid[0])) for j in range(len(Grid)) if Grid[j][i] == 'x']
+
+    for y in range(len(not_allowed)):
+        b[1+((not_allowed[y][1])*2)][((not_allowed[y][0])*2)] = -1 #left
+        b[((not_allowed[y][1])*2)][1+((not_allowed[y][0])*2)] =  -1 #top
+        b[1+((not_allowed[y][1])*2)][2+((not_allowed[y][0])*2)] = -1 #right 
+        b[2+((not_allowed[y][1])*2)][1+((not_allowed[y][0])*2)] = -1
+
+    #return vector of positions x and y not allowed to place blocks
+    not_allowed.extend(fixed_blocks)
+
     #create vectors for x and y directions if more than 1 Lazor
     j = []
     k = []
@@ -154,7 +194,7 @@ def read_file(file_name):
 used_contact_pos = []
 
 class block():
-    
+
     def __init__(self, block_type, position):
         self.block_type = block_type
         self.position = position
@@ -162,11 +202,13 @@ class block():
     def move(self, new_position, m, b, pos_x, pos_y, lazor_path_list, lazor_dir_list):
         self.position = new_position
 
-        for i in range(len(m)):
+
+        for i in range(len(lazor_path_list)):
             lazor_num = i
             contact_position, x_dir, y_dir, contact_index, contact_side = self.lazor_contact_tuple(m[i],b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num, used_contact_pos)      
             if contact_position is not None:
                 lazor_path_list, lazor_dir_list = self.add_to_lazor_path(contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side)
+
     
     def contact_points(self, lazor_path_list):
         frequency = Counter(lazor_path_list)
@@ -282,13 +324,11 @@ class block():
             while lazor_path_list[lazor_num][i] != first_contact_pos:
                 contact_index = i
                 i += 1
-            
             contact_side = b[first_contact_pos[1]][first_contact_pos[0]]
         else:
             first_contact_pos = None
             contact_index = None
             contact_side = None
-
 
         return first_contact_pos, x_dir, y_dir, contact_index,contact_side
 
@@ -366,7 +406,6 @@ def solve(file_name):
         #with all blokcs position re-calculate the postion check
         target_check = np.multiply(m,t)
 
-
 if __name__ == "__main__":
 
     b1 = block("refract", (4,1))
@@ -377,3 +416,5 @@ if __name__ == "__main__":
 
     print(Lazor_Path)
     print(Lazor_Dir)
+
+        
