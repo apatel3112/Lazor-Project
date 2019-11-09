@@ -378,7 +378,7 @@ class block():
             
         print('FCP',first_contact_pos)
         return first_contact_pos, x_dir, y_dir, contact_index,contact_side
- 
+      
 def valid_positions(Lazor_path, Blocks_Allowed):
     '''
     This function takes in the lazor path, converts it to blocks
@@ -408,6 +408,7 @@ def valid_positions(Lazor_path, Blocks_Allowed):
     common_blocks = [list(x) for x in set(tuple(x) for x in blockList).intersection(set(tuple(x) for x in Blocks_Allowed))]
     
     return common_blocks
+
 
 def solve(file_name):
     
