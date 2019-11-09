@@ -378,7 +378,38 @@ class block():
             
         print('FCP',first_contact_pos)
         return first_contact_pos, x_dir, y_dir, contact_index,contact_side
+      
+def valid_positions(Lazor_path, Blocks_Allowed):
+    '''
+    This function takes in the lazor path, converts it to blocks
+    '''
+    blockList = []
+    for i in range(len(lazor_path)):
+        for j in range(len(lazor_path[i])):
+            if lazor_path[i][j][0]%2 == 0: # even
+                print(lazor_path[i][j][1])
+                x = lazor_path[i][j][0]//2
+                y = lazor_path[i][j][1]//2
+                blockList.append([x,y])
+                blockList.append([x-1,y])
+            else:
+                print(lazor_path[i][j])
+                x = lazor_path[i][j][0]//2
+                y = lazor_path[i][j][1]//2
+                blockList.append([x,y])
+                blockList.append([x,y-1])
     
+    blockList = [[blockList[i][0]+1,blockList[i][1]+1] for i in range(len(blockList))]
+    #print(blockList)
+    
+    #print(common_blocks)
+    lazor_blocks = [list(x) for x in set(tuple(x) for x in blockList)]
+    print(lazor_blocks)
+    common_blocks = [list(x) for x in set(tuple(x) for x in blockList).intersection(set(tuple(x) for x in Blocks_Allowed))]
+    
+    return common_blocks
+
+
 def solve(file_name):
     
     #Load lazor file variables
@@ -441,7 +472,8 @@ def solve(file_name):
         
         #for each block object, randomly choose a position in the grid
         for i in range(len(blocks)):
-            pos = random.choice(Blocks_Allowed)
+            valid_pos = valid_positions(Lazor_Path, Blocks_Allowed)
+            pos = random.choice(valid_pos)
             blocks[i].move((pos[0], pos[1]), m, b, pos[0], pos[1], Lazor_Path, Lazor_Dir)
             Blocks_Allowed.remove(pos)
         
