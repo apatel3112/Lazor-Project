@@ -58,10 +58,10 @@ class Block():
         pos_x = position[0]
         pos_y = position[1]
 
-        b[1+((pos_x-1)*2)][((pos_y-1)*2)] = 3  # left
-        b[((pos_x-1)*2)][1+((pos_y-1)*2)] = 1  # top
-        b[1+((pos_x-1)*2)][2+((pos_y-1)*2)] = 4  # right
-        b[2+((pos_x-1)*2)][1+((pos_y-1)*2)] = 2  # bottom
+        b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 3  # left
+        b[((pos_y-1)*2)][1+((pos_x-1)*2)] = 1  # top
+        b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 4  # right
+        b[2+((pos_y-1)*2)][1+((pos_x-1)*2)] = 2  # bottom
 
         return b
 
@@ -83,7 +83,7 @@ class Block():
         # getting the coordinates
         coords = [[(pos_x-1)*2,1+((pos_y-1)*2)],[1+((pos_x-1)*2),(pos_y-1)*2],[2+((pos_x-1)*2),1+((pos_y-1)*2)],[1+((pos_x-1)*2),2+((pos_y-1)*2)]]
 
-        return b_type
+        return coords,b_type
 
     def block_prop(self, x_dir, y_dir, contact_side):
         '''
