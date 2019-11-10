@@ -78,15 +78,17 @@ def add_to_lazor_path(block,contact_position, m, lazor_path_list, lazor_dir_list
             m[lazor_num]: updated lazor matrix
     '''
     # checks to make sure that this is not a special case
-    if check_special:
-        return lazor_path_list, lazor_dir_list, m[lazor_num]
+    
+#    if check_special:
+#        print("hereeeee")
+#        return lazor_path_list, lazor_dir_list, m[lazor_num]
 
     # starts saying where the lazor hits the block
     Lazor_Path_i = [[contact_position[0], contact_position[1]]]
     Lazor_Dir_i = [[new_x_dir, new_y_dir]]
 
-    r = len(m[lazor_num])  # height
-    l = len(m[lazor_num][0])  # length
+    r = len(m)  # height
+    l = len(m[0])  # length
 
     if block.block_type != "opaque":
         while 0 <= Lazor_Path_i[-1][0] < l and 0 <= Lazor_Path_i[-1][1] < r:
@@ -113,22 +115,24 @@ def add_to_lazor_path(block,contact_position, m, lazor_path_list, lazor_dir_list
         lazor_dir_list[lazor_num].extend(Lazor_Dir_i)
 
     # update matrix of 2's
-    twos = [[i, j] for i in range(len(m[lazor_num][0])) for j in range(len(m[lazor_num])) if m[lazor_num][j][i] == 2]
+    twos = [[i, j] for i in range(len(m[0])) for j in range(len(m)) if m[j][i] == 2]
 
     for i in range(len(twos)):
-        m[lazor_num][twos[i][1]][twos[i][0]] = 0
+        m[twos[i][1]][twos[i][0]] = 0
 
     # need separate loops as len(twos) != len(lazor_path_list[lazor_num])
     for j in range(len(lazor_path_list[lazor_num])):
-            m[lazor_num][lazor_path_list[lazor_num][j][1]][lazor_path_list[lazor_num][j][0]] = 2
-
-    return Lazor_Path_i, lazor_path_list, lazor_dir_list, m[lazor_num]
+            m[lazor_path_list[lazor_num][j][1]][lazor_path_list[lazor_num][j][0]] = 2
+    print('M',m)
+    print(Lazor_Path_i)
+    return lazor_path_list, lazor_dir_list, m
 
 
 def lazor_contact_tuple(m, b, lazor_path_list, lazor_dir_list, lazor_num, used_contact_pos):        
 
     # element wise product to find overlapping indices of lazor and block
     matrix_prod = np.multiply(m, b)
+    print(matrix_prod)
 
     if np.count_nonzero(matrix_prod) >= 1:
         contact_pos = [[i, j] for i in range(len(matrix_prod[0])) for j in range(len(matrix_prod)) if matrix_prod[j][i] >= 2]
@@ -163,7 +167,8 @@ def lazor_contact_tuple(m, b, lazor_path_list, lazor_dir_list, lazor_num, used_c
         contact_side = None
         x_dir = None
         y_dir = None
-
+        
+    print(used_contact_pos)
     return first_contact_pos, x_dir, y_dir, contact_index, contact_side
 
 
