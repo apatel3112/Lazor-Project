@@ -111,9 +111,12 @@ class Block():
         if self.block_type == "opaque":
             delete_after_contact = True
         else:
+
             if self.block_type == "refract":
                 delete_after_contact = False
             if self.block_type == "reflect":
                 delete_after_contact = True
 
+
         return new_x_dir, new_y_dir, delete_after_contact
+
