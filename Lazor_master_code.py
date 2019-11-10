@@ -390,6 +390,7 @@ def lazor_contact_tuple(m,b,lazor_path_list, lazor_dir_list, lazor_num, used_con
         used_contact_pos.extend(contact_pos)
 
         
+
         contact_index = 0
         i = 0
         while lazor_path_list[lazor_num][i] != first_contact_pos:
@@ -440,6 +441,7 @@ def valid_positions(lazor_path, blocks_allowed):
     print("common", common_blocks)
     return common_blocks
 
+
 def save_file(file_name, solved_grid):
     '''
     This function weites the solved grids from file_name on to a new txt file
@@ -478,6 +480,10 @@ def save_file(file_name, solved_grid):
  
 
 def solve(file_name):
+    '''
+    Thsi function takes in the lazor file name, calculates the block positions
+    to solve the lazor file, and outputs the new block grid in a txt file
+    '''
     
     #Load lazor file variables
     
@@ -492,17 +498,21 @@ def solve(file_name):
       
     #for each block define it as an object and store in blocks variable
     blocks = []
+    block_type =[]
     for i in range(1, num_reflect+1):
         i = Block("reflect", (0,0))
         blocks.append(i)
+        block_type.append('A')
         
     for i in range(1, num_opaque+1):
         i = Block("opaque", (0,0))
         blocks.append(i)
+        block_type.append('B')
     
     for i in range(1, num_refract+1):
         i = Block("refract", (0,0))
         blocks.append(i)
+
         
     #edit not allowed to be one the same index as Blocks Allowed
     not_allowed = [[not_allowed[i][0]+1,not_allowed[i][1]+1] for i in range(len(not_allowed))]
@@ -520,6 +530,7 @@ def solve(file_name):
     input_LP = Lazor_Path
     #if position_check is the same as two times the position matrix loop breaks
     while not np.array_equal(target_check, 2*t):  
+
         #for each block object, randomly choose a position in the grid  
             valid_pos = valid_positions(fixed_LP, blocks_allowed)         
             for i in range(len(blocks)):
@@ -551,7 +562,17 @@ def solve(file_name):
 
         
         #with all blokcs position re-calculate the postion check
+
+    
+    
+    solved_grid = Grid    
+    for i in len(block_pos):
+        solved_grid[block_pos[i][0]-1][block_pos[i][1]-1] = block_type[i]
         
+            
+    save_file(file_name, solved_grid)
+    
+
 
 if _name_ == "_main_":
     solve('/Users/Anusha/Downloads/Handout_Lazor/bff_files/mad_1.bff')
