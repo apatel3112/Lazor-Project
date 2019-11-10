@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Oct 25 14:55:52 2019
+Created on Sun Nov 10 08:53:31 2019
 
 @author: madelinenoble
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Nov  8 22:04:30 2019
+
+@author: Anusha
 """
 import numpy as np
 import random
@@ -211,183 +219,208 @@ def read_file(file_name):
 
 used_contact_pos = []
 
-class block():
-
+class Block():
     def __init__(self, block_type, position):
         self.block_type = block_type
         self.position = position
-
-    def move(self, new_position, m, b, pos_x, pos_y, lazor_path_list, lazor_dir_list):
-        self.position = new_position
-
-
-        for i in range(len(lazor_path_list)):
-            lazor_num = i
-            contact_position, x_dir, y_dir, contact_index, contact_side = self.lazor_contact_tuple(m[i],b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num, used_contact_pos)      
-            if contact_position is not None:
-                Lazor_Path_i, lazor_path_list, lazor_dir_list = self.add_to_lazor_path(contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side)
-        return Lazor_Path_i
-    
-    #def contact_points(self, lazor_path_list):
         
-      
-        #return contact_list,refract_index
-                
-    def add_to_lazor_path(self,contact_position, lazor_path_list, lazor_dir_list, lazor_num, x_dir, y_dir, contact_index, contact_side):
-        # "top" = 1
-        # "bottom" = 2
-        # "left" = 3
-        # "right" = 4
+    def change_position(self, new_position):
+        self.position = new_position
+        
+        return new_position
+    
+    def add_blocks(self,b):
+        position = list(self.position)
+        pos_x = position[0]
+        pos_y = position[1]
+        
+        b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 3 #left
+        b[((pos_y-1)*2)][1+((pos_x-1)*2)] =  1 #top
+        b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 4 #right 
+        b[2+((pos_y-1)*2)][1+((pos_x-1)*2)] = 2 #bottom
+        
+        return b
+    
+    def b_matrix(self):
+        position = list(self.position)
+        pos_x = position[0]
+        pos_y = position[1]
+        
+        b_type = self.block_type
+        coords = [[(pos_x-1)*2,1+((pos_y-1)*2)],[1+((pos_x-1)*2),(pos_y-1)*2],[2+((pos_x-1)*2),1+((pos_y-1)*2)],[1+((pos_x-1)*2),2+((pos_y-1)*2)]]
+        
+        return coords, b_type
+           
+    def block_prop(self,x_dir,y_dir,contact_side):
+        
         if contact_side == 1 or contact_side  == 2:
             new_x_dir, new_y_dir = x_dir, y_dir*-1
         elif contact_side  == 3 or contact_side  == 4:
             new_x_dir, new_y_dir = x_dir*-1, y_dir 
-                
+        
         if self.block_type == "opaque":
-            new_x_dir, new_y_dir = 0, 0
             delete_after_contact = True
         else:             
             if self.block_type == "refract":
                 delete_after_contact = False
             if self.block_type == "reflect":
                 delete_after_contact = True
+        
+        return new_x_dir,new_y_dir,delete_after_contact
 
-        Lazor_Path_i = [[contact_position[0], contact_position[1]]]
-        Lazor_Dir_i =  [[new_x_dir, new_y_dir]]
+def find_block_type(blocks,b,contact_position):
+    coords = []
+    b_type = []
+    
+    for i in range(len(blocks)):
+        coords_i,b_type  = blocks[i].b_matrix()
+        coords.append(coords_i)
         
-        print('LDI',Lazor_Dir_i)
-        print(self.block_type)
-        print(self.position)
+    print('Coords',coords)
+    index = [j for j in range(len(coords)) if contact_position in coords[j]][0]
+    print('Index',index)
+    block = blocks[index]
+    
+    return block
+                    
+def add_to_lazor_path(block,contact_position, lazor_path_list, lazor_dir_list, lazor_num, new_x_dir, new_y_dir, contact_index, contact_side,delete_after_contact):
+    # "top" = 1 
+    # "bottom" = 2
+    # "left" = 3
+    # "right" = 4
+    Lazor_Path_i = [[contact_position[0], contact_position[1]]]
+    Lazor_Dir_i =  [[new_x_dir, new_y_dir]]
         
-        r = len(m[lazor_num])
-        l = len(m[lazor_num][0])
+    r = len(m[lazor_num])
+    l = len(m[lazor_num][0])
+    
+    if block.block_type != "opaque":
+        while 0 <= Lazor_Path_i[-1][0] < l and 0 <= Lazor_Path_i[-1][1] < r:
+            x = Lazor_Path_i[-1][0] + new_x_dir
+            y = Lazor_Path_i[-1][1] + new_y_dir
+            new_path = [x,y]
+            new_dir = [new_x_dir, new_y_dir]
+            Lazor_Path_i.append(new_path)
+            Lazor_Dir_i.append(new_dir)
+        Lazor_Dir_i.pop()
+        Lazor_Path_i.pop()
 
-        if self.block_type != "opaque":
-            while 0 <= Lazor_Path_i[-1][0] < l and 0 <= Lazor_Path_i[-1][1] < r:
-                x = Lazor_Path_i[-1][0] + new_x_dir
-                y = Lazor_Path_i[-1][1] + new_y_dir
-                new_path = [x,y]
-                new_dir = [new_x_dir, new_y_dir]
-                Lazor_Path_i.append(new_path)
-                Lazor_Dir_i.append(new_dir)
-            Lazor_Dir_i.pop()
-            Lazor_Path_i.pop()
-        
-        
-        if delete_after_contact is True:
-            if self.block_type == "opaque":
-                contact_index += 1
-                
-            del lazor_dir_list[lazor_num][contact_index+1:len(lazor_dir_list[lazor_num])+1]
-            del lazor_path_list[lazor_num][contact_index+1:len(lazor_path_list[lazor_num])+1]
+    
+    if delete_after_contact is True:
+        if block.block_type == "opaque":
+            contact_index += 1
             
-            if self.block_type != "opaque":
-                lazor_path_list[lazor_num] = lazor_path_list[lazor_num] + Lazor_Path_i
-                lazor_dir_list[lazor_num] = lazor_dir_list[lazor_num] + Lazor_Dir_i
-        else:
-               lazor_path_list[lazor_num].extend(Lazor_Path_i)
-               lazor_dir_list[lazor_num].extend(Lazor_Dir_i)
-               
-        print('LPL',lazor_path_list[lazor_num])
+        del lazor_dir_list[lazor_num][contact_index+1:len(lazor_dir_list[lazor_num])+1]
+        del lazor_path_list[lazor_num][contact_index+1:len(lazor_path_list[lazor_num])+1]
         
-        #only for refract blocks
-#        if self.block_type == "refract":
-#            a = [tuple(lazor_path_list[lazor_num][i]) for i in range(len(lazor_path_list[lazor_num]))]
-#            frequency = Counter(a)
-#            points = list(frequency.keys())
-#            numbers = list(frequency.values())
-#            contact_list = []    
-#            contact_list = [list(points[i]) for i in range(len(numbers)) if numbers[i] == 2]    
-#            a = [list(a[i]) for i in range(len(a))]
-#            for x in range(len(contact_list)):
-#                refract_index = [i for i in range(len(a)) if a[i] == contact_list[x]]
-#                parent = lazor_path_list[lazor_num][0:refract_index[0]]
-#                branch_1 = lazor_path_list[lazor_num][0:refract_index[1]]
-#                branch_2 = parent + lazor_path_list[lazor_num][refract_index[1]:len(a)]
-#                parent_dir = lazor_dir_list[lazor_num][0:refract_index[0]]
-#                branch_1_dir = lazor_dir_list[lazor_num][0:refract_index[1]]
-#                branch_2_dir = parent_dir + lazor_dir_list[lazor_num][refract_index[1]:len(a)]
-
-        #update matrix of 2's        
-        twos = [[i,j] for i in range(len(m[lazor_num][0])) for j in range(len(m[lazor_num])) if m[lazor_num][j][i] == 2]
-
-        
-        for i in range(len(twos)):
-            m[lazor_num][twos[i][1]][twos[i][0]] = 0
-
-        #need separate loops as len(twos) != len(lazor_path_list[lazor_num])
-        for j in range(len(lazor_path_list[lazor_num])):           
-                m[lazor_num][lazor_path_list[lazor_num][j][1]][lazor_path_list[lazor_num][j][0]] = 2
-        
-        print(m)
-        print(lazor_num)
-        return Lazor_Path_i, lazor_dir_list, lazor_path_list #branch_1, branch_2, branch_1_dir, branch_2_dir
+        if block.block_type != "opaque":
+            lazor_path_list[lazor_num] = lazor_path_list[lazor_num] + Lazor_Path_i
+            lazor_dir_list[lazor_num] = lazor_dir_list[lazor_num] + Lazor_Dir_i
+    else:
+           lazor_path_list[lazor_num].extend(Lazor_Path_i)
+           lazor_dir_list[lazor_num].extend(Lazor_Dir_i)
+           
+    print('LPL',lazor_path_list[lazor_num])
+    
+    #only for refract blocks
+    #        if self.block_type == "refract":
+    #            a = [tuple(lazor_path_list[lazor_num][i]) for i in range(len(lazor_path_list[lazor_num]))]
+    #            frequency = Counter(a)
+    #            points = list(frequency.keys())
+    #            numbers = list(frequency.values())
+    #            contact_list = []    
+    #            contact_list = [list(points[i]) for i in range(len(numbers)) if numbers[i] == 2]    
+    #            a = [list(a[i]) for i in range(len(a))]
+    #            for x in range(len(contact_list)):
+    #                refract_index = [i for i in range(len(a)) if a[i] == contact_list[x]]
+    #                parent = lazor_path_list[lazor_num][0:refract_index[0]]
+    #                branch_1 = lazor_path_list[lazor_num][0:refract_index[1]]
+    #                branch_2 = parent + lazor_path_list[lazor_num][refract_index[1]:len(a)]
+    #                parent_dir = lazor_dir_list[lazor_num][0:refract_index[0]]
+    #                branch_1_dir = lazor_dir_list[lazor_num][0:refract_index[1]]
+    #                branch_2_dir = parent_dir + lazor_dir_list[lazor_num][refract_index[1]:len(a)]
+    
+    #update matrix of 2's        
+    twos = [[i,j] for i in range(len(m[lazor_num][0])) for j in range(len(m[lazor_num])) if m[lazor_num][j][i] == 2]
+    
+    
+    for i in range(len(twos)):
+        m[lazor_num][twos[i][1]][twos[i][0]] = 0
+    
+    #need separate loops as len(twos) != len(lazor_path_list[lazor_num])
+    for j in range(len(lazor_path_list[lazor_num])):           
+            m[lazor_num][lazor_path_list[lazor_num][j][1]][lazor_path_list[lazor_num][j][0]] = 2
+    
+    print(m)
+    print(lazor_num)
+    return Lazor_Path_i, lazor_path_list, lazor_dir_list, m #branch_1, branch_2, branch_1_dir, branch_2_dir
         
 
 
 # in order to find the direction that the lazor is going when it hits the block
 # we need to find the index in the lazor path list and look at that index in the lazor direction list
-    def lazor_contact_tuple(self, m,b,pos_x,pos_y, lazor_path_list, lazor_dir_list, lazor_num, used_contact_pos):
+def lazor_contact_tuple(m,b,lazor_path_list, lazor_dir_list, lazor_num, used_contact_pos):        
 
-        b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 3 #left
-        b[((pos_y-1)*2)][1+((pos_x-1)*2)] =  1 #top
-        b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 4 #right 
-        b[2+((pos_y-1)*2)][1+((pos_x-1)*2)] = 2 #bottom
+    #element wise product to find overlapping indices of lazor and block
+    # m = np.transpose(m)
+    matrix_prod = np.multiply(m,b)
+    print('MPPPPP',matrix_prod)
+   
+    if np.count_nonzero(matrix_prod) >= 1:
+        contact_pos = [[i,j] for i in range(len(matrix_prod[0])) for j in range(len(matrix_prod)) if matrix_prod[j][i] >= 2]
+    else:
+        contact_pos = []
+    
 
-        #element wise product to find overlapping indices of lazor and block
-        # m = np.transpose(m)
-        matrix_prod = np.multiply(m,b)
-       
-        if np.count_nonzero(matrix_prod) >= 1:
-            contact_pos = [[i,j] for i in range(len(matrix_prod[0])) for j in range(len(matrix_prod)) if matrix_prod[j][i] >= 2]
+    #make sure contact_pos list doesnt already exist in used contact pos
+    contact_pos = [contact_pos[i] for i in range(len(contact_pos)) if contact_pos[i] not in used_contact_pos]
+    
+    #add to used_contact_pos list to avoid repeats
+    if len(contact_pos) > 0:
+        print('LPL',lazor_path_list[lazor_num])
+        index = lazor_path_list[lazor_num].index(contact_pos[0])           
+        x_dir, y_dir = lazor_dir_list[lazor_num][index]
+        
+        if y_dir == 1:      
+            rev = False
         else:
-            contact_pos = []
+            rev = True
+        
+        first_contact_pos = sorted(contact_pos, key=lambda l:l[x_dir], reverse=rev)[0]
+        used_contact_pos.extend(contact_pos)
+
         
 
-        #make sure contact_pos list doesnt already exist in used contact pos
-        contact_pos = [contact_pos[i] for i in range(len(contact_pos)) if contact_pos[i] not in used_contact_pos]
+        contact_index = 0
+        i = 0
+        while lazor_path_list[lazor_num][i] != first_contact_pos:
+            contact_index = i
+            i += 1
+        contact_side = b[first_contact_pos[1]][first_contact_pos[0]]
+    else:
+        first_contact_pos = None
+        contact_index = None
+        contact_side = None
+        x_dir = None
+        y_dir = None
         
-
-
-
-        #add to used_contact_pos list to avoid repeats
-        if len(contact_pos) > 0:
-            index = lazor_path_list[lazor_num].index(contact_pos[0])           
-            x_dir, y_dir = lazor_dir_list[lazor_num][index]
-            
-            if y_dir == 1:      
-                rev = False
-            else:
-                rev = True
-            
-            first_contact_pos = sorted(contact_pos, key=lambda l:l[x_dir], reverse=rev)[0]
-            used_contact_pos.extend(contact_pos)
-
-            
-            contact_index = 0
-            i = 0
-            while lazor_path_list[lazor_num][i] != first_contact_pos:
-                contact_index = i
-                i += 1
-            contact_side = b[first_contact_pos[1]][first_contact_pos[0]]
-        else:
-            first_contact_pos = None
-            contact_index = None
-            contact_side = None
-            x_dir = None
-            y_dir = None
-            
-        print('FCP',first_contact_pos)
-        return first_contact_pos, x_dir, y_dir, contact_index,contact_side
+    print('FCP',first_contact_pos)
+    return first_contact_pos, x_dir, y_dir, contact_index,contact_side
  
-def valid_positions(lazor_path, Blocks_Allowed):
+def valid_positions(lazor_path, blocks_allowed):
     '''
     This function takes in the lazor path, converts it to blocks
     '''
     blockList = []
+   
+    
     for i in range(len(lazor_path)):
         for j in range(len(lazor_path[i])):
-            if lazor_path[i][j][0]%2 == 0: # even
+            if lazor_path[i][j][0] == 1:
+                x = lazor_path[i][j][0]//2
+                y = lazor_path[i][j][1]//2
+                blockList.append([x,y]) 
+            elif lazor_path[i][j][0]%2 == 0: # even
                 x = lazor_path[i][j][0]//2
                 y = lazor_path[i][j][1]//2
                 blockList.append([x,y])
@@ -398,28 +431,16 @@ def valid_positions(lazor_path, Blocks_Allowed):
                 blockList.append([x,y])
                 blockList.append([x,y-1])
     
+    
     blockList = [[blockList[i][0]+1,blockList[i][1]+1] for i in range(len(blockList))]
     #print(blockList)
     
     #print(common_blocks)
     lazor_blocks = [list(x) for x in set(tuple(x) for x in blockList)]
-    common_blocks = [list(x) for x in set(tuple(x) for x in blockList).intersection(set(tuple(x) for x in Blocks_Allowed))]
+    common_blocks = [list(x) for x in set(tuple(x) for x in blockList).intersection(set(tuple(x) for x in blocks_allowed))]
     print("common", common_blocks)
     return common_blocks
 
-
-        #add to used_contact_pos list to avoid repeats
-        if len(contact_pos) > 0:
-            index = lazor_path_list[lazor_num].index(contact_pos[0])           
-            x_dir, y_dir = lazor_dir_list[lazor_num][index]
-            
-            if y_dir == 1:      
-                rev = False
-            else:
-                rev = True
-            
-            first_contact_pos = sorted(contact_pos, key=lambda l:l[x_dir], reverse=rev)[0]
-            used_contact_pos.extend(contact_pos)
 
 def save_file(file_name, solved_grid):
     '''
@@ -440,10 +461,6 @@ def save_file(file_name, solved_grid):
         
     #close the new file    
     new_file.close()
-    
-    
-    
-
             
             contact_index = 0
             i = 0
@@ -461,33 +478,6 @@ def save_file(file_name, solved_grid):
         print('FCP',first_contact_pos)
         return first_contact_pos, x_dir, y_dir, contact_index,contact_side
  
-def valid_positions(Lazor_path, Blocks_Allowed):
-    '''
-    This function takes in the lazor path, converts it to blocks
-    '''
-    blockList = []
-    for i in range(len(lazor_path)):
-        for j in range(len(lazor_path[i])):
-            if lazor_path[i][j][0]%2 == 0: # even
-                x = lazor_path[i][j][0]//2
-                y = lazor_path[i][j][1]//2
-                blockList.append([x,y])
-                blockList.append([x-1,y])
-            else:
-                x = lazor_path[i][j][0]//2
-                y = lazor_path[i][j][1]//2
-                blockList.append([x,y])
-                blockList.append([x,y-1])
-    
-    blockList = [[blockList[i][0]+1,blockList[i][1]+1] for i in range(len(blockList))]
-    #print(blockList)
-    
-    #print(common_blocks)
-    lazor_blocks = [list(x) for x in set(tuple(x) for x in blockList)]
-    common_blocks = [list(x) for x in set(tuple(x) for x in blockList).intersection(set(tuple(x) for x in Blocks_Allowed))]
-    print("common", common_blocks)
-    return common_blocks
-
 
 def solve(file_name):
     '''
@@ -496,81 +486,82 @@ def solve(file_name):
     '''
     
     #Load lazor file variables
-    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file(file_name)
     
+    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file(file_name) 
     fixed_m = m
-    
+    print('FM',fixed_m)
+        
     #Specify how many of each block type there are
     num_reflect = Blocks[0]
     num_opaque = Blocks[1]
     num_refract = Blocks[2]
-    
-    
+      
     #for each block define it as an object and store in blocks variable
     blocks = []
     block_type =[]
     for i in range(1, num_reflect+1):
-        i = block("reflect", (0,0))
+        i = Block("reflect", (0,0))
         blocks.append(i)
         block_type.append('A')
         
     for i in range(1, num_opaque+1):
-        i = block("opaque", (0,0))
+        i = Block("opaque", (0,0))
         blocks.append(i)
         block_type.append('B')
     
     for i in range(1, num_refract+1):
-        i = block("refract", (0,0))
+        i = Block("refract", (0,0))
         blocks.append(i)
-        block_type.append('C')
-    
+
+        
     #edit not allowed to be one the same index as Blocks Allowed
-    for i in range(len(not_allowed)):
-        for j in range(len(not_allowed[0])):
-            new = not_allowed[i][j] + 1
-            not_allowed[i][j] = new
+    not_allowed = [[not_allowed[i][0]+1,not_allowed[i][1]+1] for i in range(len(not_allowed))]
+    not_allowed.extend([[1,4],[2,4]])
     
     #create blocks allowed variable    
-    Blocks_Allowed = []
-    for i in range(len(Grid)):
-        for j in range(len(Grid[0])):
-            Blocks_Allowed.append([i+1,j+1])
-                       
-    #edit blocks allowed to exlcude not_allowed blocks
-    for i in not_allowed:
-        Blocks_Allowed.remove(i)
+    blocks_allowed = [[i+1,j+1] for i in range(len(Grid)) for j in range(len(Grid[0])) if [i+1,j+1] not in not_allowed]
 
-    print(Blocks_Allowed)
-            
+          
     #define variable that checks if targets have been hit    
     target_check = np.multiply(m,t)
+    print('OG Lazor',m)
     
+    fixed_LP = Lazor_Path
+    input_LP = Lazor_Path
     #if position_check is the same as two times the position matrix loop breaks
     while not np.array_equal(target_check, 2*t):  
-        #create blocks allowed variable    
-        Blocks_Allowed = []
-        for i in range(len(Grid)):
-            for j in range(len(Grid[0])):
-                Blocks_Allowed.append([i+1,j+1])
-                           
-        #edit blocks allowed to exlcude not_allowed blocks
-        for i in not_allowed:
-            Blocks_Allowed.remove(i)
 
-        #for each block object, randomly choose a position in the grid
-        lazor_path_i = Lazor_Path
-        block_pos = []
+        #for each block object, randomly choose a position in the grid  
+            valid_pos = valid_positions(fixed_LP, blocks_allowed)         
+            for i in range(len(blocks)):
+                valid_pos = valid_positions(input_LP, blocks_allowed)
+                pos = random.choice(valid_pos)
+                print(pos)
+                blocks[i].change_position(valid_pos)
+                print('Hello',blocks[i].change_position(pos))
+                blocks[i].add_blocks(b)
 
-        for i in range(len(blocks)):
-            valid_pos = valid_positions(lazor_path_i, Blocks_Allowed)
-            pos = random.choice(valid_pos)
-            lazor_path_i = blocks[i].move((pos[0], pos[1]), m, b, pos[0], pos[1], Lazor_Path, Lazor_Dir)
-            block_pos.append(pos)
-            Blocks_Allowed.remove(pos)           
-            m = fixed_m
+                Lazor_Path_i = []
+                new_x_dir,new_y_dir = 0,0
+                for i in range(len(Lazor_Path)):
+                    lazor_num = i
+           #print('LN',lazor_num)
+                    contact_position, x_dir, y_dir, contact_index, contact_side = lazor_contact_tuple(m[i],b, Lazor_Path, Lazor_Dir, lazor_num, used_contact_pos)
+                    #while contact_position is not None:               
+                    block = find_block_type(blocks,b,contact_position) 
+                    new_x_dir,new_y_dir,delete_after_contact = block.block_prop(x_dir,y_dir,contact_side)
+                    Lazor_Path_i, Lazor_Path, Lazor_Dir, m = add_to_lazor_path(block,contact_position, Lazor_Path, Lazor_Dir, lazor_num, new_x_dir, new_y_dir, contact_index, contact_side, delete_after_contact)
+                   #print('LP_LN',Lazor_Path[lazor_num])
+                    contact_position, x_dir, y_dir, contact_index, contact_side = lazor_contact_tuple(m[i],b, Lazor_Path, Lazor_Dir, lazor_num, used_contact_pos)
+                input_LP = [Lazor_Path_i]
+                
+                blocks_allowed.remove(pos)
+                valid_pos.remove(pos)
+                target_check = np.multiply(m,t)
+                print('New_Lazor_Pos',m)
+
         
         #with all blokcs position re-calculate the postion check
-        target_check = np.multiply(m,t)
 
     
     
@@ -581,18 +572,26 @@ def solve(file_name):
             
     save_file(file_name, solved_grid)
     
-=======
 
 
-if __name__ == "__main__":
-    solve('mad_1.bff')
-#    b1 = block("refract", (4,1))
-#    Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file('mad_1.bff')
-#    b1.move((4, 1), m, b, 4, 1, Lazor_Path, Lazor_Dir)
-#    b2 = block("reflect", (2,3))
-#    b2.move((2, 3), m, b, 2, 3, Lazor_Path, Lazor_Dir)
-#
-#    print(Lazor_Path)
-#    print(Lazor_Dir)
+if _name_ == "_main_":
+    solve('/Users/Anusha/Downloads/Handout_Lazor/bff_files/mad_1.bff')
+    
+    #Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file('/Users/Anusha/Downloads/Handout_Lazor/bff_files/mad_1.bff')
 
-        
+     
+#    used_contact_pos = []
+#    for i in range(len(Lazor_Path)):
+#           lazor_num = i
+#           #print('LN',lazor_num)
+#           contact_position, x_dir, y_dir, contact_index, contact_side = lazor_contact_tuple(m[i],b, Lazor_Path, Lazor_Dir, lazor_num, used_contact_pos)
+#                              
+#           while contact_position is not None:               
+#               block = find_block_type(blocks,b,contact_position) 
+#               new_x_dir,new_y_dir,delete_after_contact = block.block_prop(x_dir,y_dir)
+#               Lazor_Path_i, Lazor_Path, Lazor_Dir = add_to_lazor_path(block,contact_position, Lazor_Path, Lazor_Dir, lazor_num, new_x_dir, new_y_dir, contact_index, contact_side, delete_after_contact)
+#               #print('LP_LN',Lazor_Path[lazor_num])
+#               contact_position, x_dir, y_dir, contact_index, contact_side = lazor_contact_tuple(m[i],b, Lazor_Path, Lazor_Dir, lazor_num, used_contact_pos)
+
+#    
+    print(sum(m))
