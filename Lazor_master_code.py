@@ -349,6 +349,7 @@ class block():
         
 
 
+
         #add to used_contact_pos list to avoid repeats
         if len(contact_pos) > 0:
             index = lazor_path_list[lazor_num].index(contact_pos[0])           
@@ -407,6 +408,19 @@ def valid_positions(lazor_path, Blocks_Allowed):
     return common_blocks
 
 
+        #add to used_contact_pos list to avoid repeats
+        if len(contact_pos) > 0:
+            index = lazor_path_list[lazor_num].index(contact_pos[0])           
+            x_dir, y_dir = lazor_dir_list[lazor_num][index]
+            
+            if y_dir == 1:      
+                rev = False
+            else:
+                rev = True
+            
+            first_contact_pos = sorted(contact_pos, key=lambda l:l[x_dir], reverse=rev)[0]
+            used_contact_pos.extend(contact_pos)
+
 def save_file(file_name, solved_grid):
     '''
     This function weites the solved grids from file_name on to a new txt file
@@ -429,6 +443,51 @@ def save_file(file_name, solved_grid):
     
     
     
+
+            
+            contact_index = 0
+            i = 0
+            while lazor_path_list[lazor_num][i] != first_contact_pos:
+                contact_index = i
+                i += 1
+            contact_side = b[first_contact_pos[1]][first_contact_pos[0]]
+        else:
+            first_contact_pos = None
+            contact_index = None
+            contact_side = None
+            x_dir = None
+            y_dir = None
+            
+        print('FCP',first_contact_pos)
+        return first_contact_pos, x_dir, y_dir, contact_index,contact_side
+ 
+def valid_positions(Lazor_path, Blocks_Allowed):
+    '''
+    This function takes in the lazor path, converts it to blocks
+    '''
+    blockList = []
+    for i in range(len(lazor_path)):
+        for j in range(len(lazor_path[i])):
+            if lazor_path[i][j][0]%2 == 0: # even
+                x = lazor_path[i][j][0]//2
+                y = lazor_path[i][j][1]//2
+                blockList.append([x,y])
+                blockList.append([x-1,y])
+            else:
+                x = lazor_path[i][j][0]//2
+                y = lazor_path[i][j][1]//2
+                blockList.append([x,y])
+                blockList.append([x,y-1])
+    
+    blockList = [[blockList[i][0]+1,blockList[i][1]+1] for i in range(len(blockList))]
+    #print(blockList)
+    
+    #print(common_blocks)
+    lazor_blocks = [list(x) for x in set(tuple(x) for x in blockList)]
+    common_blocks = [list(x) for x in set(tuple(x) for x in blockList).intersection(set(tuple(x) for x in Blocks_Allowed))]
+    print("common", common_blocks)
+    return common_blocks
+
 
 def solve(file_name):
     '''
@@ -501,6 +560,7 @@ def solve(file_name):
         #for each block object, randomly choose a position in the grid
         lazor_path_i = Lazor_Path
         block_pos = []
+
         for i in range(len(blocks)):
             valid_pos = valid_positions(lazor_path_i, Blocks_Allowed)
             pos = random.choice(valid_pos)
@@ -511,6 +571,7 @@ def solve(file_name):
         
         #with all blokcs position re-calculate the postion check
         target_check = np.multiply(m,t)
+
     
     
     solved_grid = Grid    
@@ -520,6 +581,8 @@ def solve(file_name):
             
     save_file(file_name, solved_grid)
     
+=======
+
 
 if __name__ == "__main__":
     solve('mad_1.bff')
