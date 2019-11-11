@@ -3,7 +3,10 @@
 """
 Created on Sat Nov  9 17:49:56 2019
 
+
 @author: Ben
+"""
+
 """
 import numpy as np
 from Block import Block
@@ -11,6 +14,7 @@ from Block import Block
 def read_file(file_name):
     '''
         this function reads the file and outputs corresponding matricies
+
         Inputs:
             file_name: string: name of the file to be read
         Outputs:
@@ -30,6 +34,7 @@ def read_file(file_name):
     C = 0  # number of refrect blocks
     P = []  # list of target position coordinates
     L = []  # lazor information
+
        
 
     file = open(file_name, "r")
@@ -49,6 +54,7 @@ def read_file(file_name):
                 Grid.append(r)
                 b = b+1
                 j = lines[b].strip('\n')
+
 
     #loop through the remaining lines in file
     for i in range(b+1, len(lines)):
@@ -80,8 +86,10 @@ def read_file(file_name):
                         d4 = int(line[8])
                 L.append((int(line[2]), int(line[4]), d3, d4))
 
+
         except IndexError:
             continue
+
 
     #Load number of block types to Blocks list
     Blocks = [A, B, C]
@@ -199,12 +207,6 @@ def read_file(file_name):
     for i in range(len(P)):
         t[P[i][1]][P[i][0]] = 1
 
-    
 
 
     return Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t
-
-
-
-    
-
