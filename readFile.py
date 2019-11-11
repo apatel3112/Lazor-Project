@@ -206,7 +206,5 @@ def read_file(file_name):
 
 
 
-if __name__ == "__main__":
-    Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file('mad_1.bff')
     
 
