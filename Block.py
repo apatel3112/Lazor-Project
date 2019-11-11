@@ -44,6 +44,16 @@ class Block():
             block type
         '''
         return self.block_type
+    
+    def pos(self):
+        '''
+        function that returns the type of block that we have
+        input
+            none
+        output
+            block type
+        '''
+        return self.position
 
     def add_blocks(self, b):
         '''
@@ -111,7 +121,6 @@ class Block():
         if self.block_type == "opaque":
             delete_after_contact = True
         else:
-
             if self.block_type == "refract":
                 delete_after_contact = False
             if self.block_type == "reflect":
