@@ -83,6 +83,7 @@ def add_to_lazor_path(block,contact_position, m, lazor_path_list, lazor_dir_list
             m[lazor_num]: updated lazor matrix
     '''
     # checks to make sure that this is not a special case
+
 #    print("contact position", contact_position)
 #    print("contact_side", contact_side)
 #    print("lazor_path_list[lazor_num][0]", lazor_path_list[lazor_num][0])
@@ -90,6 +91,7 @@ def add_to_lazor_path(block,contact_position, m, lazor_path_list, lazor_dir_list
     if check_special(contact_position, lazor_path_list, lazor_dir_list, lazor_num, new_x_dir, new_y_dir, contact_index, contact_side) == True:
         print("hereeeee")
         return lazor_path_list, lazor_dir_list, m, True
+
 
     # starts saying where the lazor hits the block
     Lazor_Path_i = [[contact_position[0], contact_position[1]]]
@@ -148,6 +150,7 @@ def lazor_contact_tuple(m, b, lazor_path_list, lazor_dir_list, lazor_num, used_c
 
     # element wise product to find overlapping indices of lazor and block
     matrix_prod = np.multiply(m, b)
+    print(matrix_prod)
 
 
     if np.count_nonzero(matrix_prod) >= 1:
@@ -208,9 +211,10 @@ def lazor_contact_tuple(m, b, lazor_path_list, lazor_dir_list, lazor_num, used_c
         contact_side = None
         x_dir = None
         y_dir = None
-        
+    
     print("contact list", contact_pos)
     return first_contact_pos, x_dir, y_dir, contact_index, contact_side, contact_pos, used_contact_pos
+
 
 
 def valid_positions(lazor_path, blocks_allowed):

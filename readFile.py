@@ -190,4 +190,6 @@ def read_file(file_name):
 
     Blocks = [A, B, C]
 
+
     return Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t
+

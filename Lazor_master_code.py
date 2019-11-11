@@ -19,12 +19,14 @@ def solve(file_name):
     '''  
     #Load lazor file variables
 
+
     Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file('mad_4.bff') 
     fixed_m = m
     fixed_b = b
     print('fixed m', fixed_m)
     print('grid', Grid)
     print('b', b)
+
     
     #Specify how many of each block type there are
     num_reflect = Blocks[0]
@@ -35,6 +37,7 @@ def solve(file_name):
     
     #for each block define it as an object and store in blocks variable    
     blocks = []
+
     
     block_type =[]
     for i in range(1, num_reflect+1):
@@ -42,18 +45,19 @@ def solve(file_name):
         
     for i in range(1, num_opaque+1):
         block_type.append('opaque')
+
     
     for i in range(1, num_refract+1): 
         block_type.append('refract')
 
-    
-
+   
     #edit not allowed to be one the same index as Blocks Allowed
     not_allowed = [[not_allowed[i][0]+1,not_allowed[i][1]+1] for i in range(len(not_allowed))]
     not_allowed.append([[1,4],[2,4]])
     
     #create blocks allowed variable    
     blocks_allowed = [[i+1,j+1] for i in range(len(Grid)) for j in range(len(Grid[0])) if [i+1,j+1] not in not_allowed]
+
     xyblocks = []
     for i in range(len(blocks_allowed)):
         xyblocks.append([blocks_allowed[i][1],blocks_allowed[i][0]])
@@ -93,6 +97,7 @@ def solve(file_name):
     branch_2_dir = None
     
     target_check = np.multiply(m,t)
+
     total_laze = len(m)
     num = 0
     
@@ -211,6 +216,8 @@ def solve(file_name):
 #if __name__ == "_main_":
 solve('mad_4.bff')
 
+    
+ 
     #Grid, Blocks, P, Lazor_Path, Lazor_Dir, m, b, not_allowed, t = read_file('/Users/Anusha/Downloads/Handout_Lazor/bff_files/mad_1.bff')
 
      
