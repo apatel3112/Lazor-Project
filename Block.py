@@ -44,6 +44,16 @@ class Block():
             block type
         '''
         return self.block_type
+    
+    def pos(self):
+        '''
+        function that returns the type of block that we have
+        input
+            none
+        output
+            block type
+        '''
+        return self.position
 
     def add_blocks(self, b):
         '''
@@ -57,12 +67,15 @@ class Block():
         position = list(self.position)
         pos_x = position[0]
         pos_y = position[1]
-
-        b[1+((pos_x-1)*2)][((pos_y-1)*2)] = 3  # left
-        b[((pos_x-1)*2)][1+((pos_y-1)*2)] = 1  # top
-        b[1+((pos_x-1)*2)][2+((pos_y-1)*2)] = 4  # right
-        b[2+((pos_x-1)*2)][1+((pos_y-1)*2)] = 2  # bottom
-
+        print("add b", b)
+        print(pos_x, pos_y)
+        
+        b[1+((pos_y-1)*2)][((pos_x-1)*2)] = 3  # left
+        b[((pos_y-1)*2)][1+((pos_x-1)*2)] = 1  # top
+        b[1+((pos_y-1)*2)][2+((pos_x-1)*2)] = 4  # right
+        b[2+((pos_y-1)*2)][1+((pos_x-1)*2)] = 2  # bottom
+        
+        
         return b
 
     def b_matrix(self):
@@ -83,7 +96,7 @@ class Block():
         # getting the coordinates
         coords = [[(pos_x-1)*2,1+((pos_y-1)*2)],[1+((pos_x-1)*2),(pos_y-1)*2],[2+((pos_x-1)*2),1+((pos_y-1)*2)],[1+((pos_x-1)*2),2+((pos_y-1)*2)]]
 
-        return b_type
+        return coords,b_type
 
     def block_prop(self, x_dir, y_dir, contact_side):
         '''
@@ -111,7 +124,6 @@ class Block():
         if self.block_type == "opaque":
             delete_after_contact = True
         else:
-
             if self.block_type == "refract":
                 delete_after_contact = False
             if self.block_type == "reflect":
