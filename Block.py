@@ -88,12 +88,11 @@ class Block():
         position = list(self.position)
         pos_x = position[0]
         pos_y = position[1]
-   
+
         b_type = self.block_type
         # getting the coordinates
-        coords = [[(pos_x-1)*2,1+((pos_y-1)*2)],[1+((pos_x-1)*2),(pos_y-1)*2],[2+((pos_x-1)*2),1+((pos_y-1)*2)],[1+((pos_x-1)*2),2+((pos_y-1)*2)]]
-
-        return coords,b_type
+        coords = [[(pos_x-1)*2, 1+((pos_y-1)*2)], [1+((pos_x-1)*2), (pos_y-1)*2], [2+((pos_x-1)*2), 1+((pos_y-1)*2)], [1+((pos_x-1)*2), 2+((pos_y-1)*2)]]
+        return coords, b_type
 
     def block_prop(self, x_dir, y_dir, contact_side):
         '''
