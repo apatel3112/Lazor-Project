@@ -15,6 +15,6 @@ Strategy for Solving:
   lazor positions, and tested to see if the lazor posiions matched the lazor targets. If not
   the function continues to the next iteration
   
-  The solution if then save to a text file and an image of the solved board is generated.
+  The solution is then save to a text file and an image of the solved board is generated.
  
   
