@@ -83,7 +83,6 @@ def read_file(file_name):
     # create empty matrices based on grid size
     row = len(Grid)
     col = len(Grid[0])
-    Grid = [b.replace('B', 'A') for b in Grid]
 
     m = []
     for i in range(len(L)):
@@ -190,6 +189,4 @@ def read_file(file_name):
 
     Blocks = [A, B, C]
 
-
     return Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t
-
