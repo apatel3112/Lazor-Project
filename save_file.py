@@ -95,7 +95,7 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
     #define size of the lazor board image
     width = len(solved_grid[0])*blocksize
     height = len(solved_grid)*blocksize
-    Size = (width, height)
+    Size = (width+5, height+5)
     
     #creat blank white image
     img = Image.new("RGB", Size, (255, 255, 255))
@@ -112,7 +112,7 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
             if solved_grid[i][j] == 'reflect':
                 for w in range(j*blocksize, (j+1)*blocksize):
                     for h in range(i*blocksize, (i+1)*blocksize):
-                        img.putpixel((w, h), (220, 220, 220))
+                        img.putpixel((w, h), (179, 179, 179))
                 draw = ImageDraw.Draw(img)
                 draw.text((j*blocksize, (i+0.5)*blocksize), "Reflect Block", fill=(0, 0, 0), font=font)
             if solved_grid[i][j] == 'opaque':
@@ -124,7 +124,7 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
             if solved_grid[i][j] == 'refract':
                 for w in range(j*blocksize, (j+1)*blocksize):
                     for h in range(i*blocksize, (i+1)*blocksize):
-                        img.putpixel((w, h), (224, 255, 255))
+                        img.putpixel((w, h), (220, 220, 220))
                 draw = ImageDraw.Draw(img)
                 draw.text((j*blocksize, (i+0.5)*blocksize), "Refract Block", fill=(0, 0, 0), font=font)
             if solved_grid[i][j] == 'x':
@@ -133,6 +133,9 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
                         img.putpixel((w, h), (255, 255, 255))
                 draw = ImageDraw.Draw(img)
                 draw.text((j*blocksize, (i+0.5)*blocksize), "No Block Allowed", fill=(0, 0, 0), font=font)
+    
+    
+    
     
     Lazor_Start = []
     for i in Lazor_Path:
@@ -144,6 +147,16 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
         y = i[1]*blocksize/2
         r = 3
         draw.ellipse((x-r, y-r, x+r, y+r), fill=(255, 0, 0))
+        
+    draw = ImageDraw.Draw(img)    
+    for x in range(len(solved_grid[0])+1):
+        draw.line((x*blocksize, 0, x*blocksize, height),(0, 0, 0))
+        
+    for y in range(len(solved_grid)+1):
+        draw.line((0, y*blocksize, width, y*blocksize),(0, 0, 0))
+    
+        
+        
     
     New_Lazor_Path = new_lazor_path(Lazor_Path) 
     print(New_Lazor_Path)
@@ -172,6 +185,8 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
     file_name = file_name.replace("txt", "png")        
     #save image
     img.save("%s_%s" % ("solved", file_name))
+                
+    img.show()  
     
     
     
