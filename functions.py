@@ -33,7 +33,7 @@ def find_block_type(blocks, b, contact_position):
         coords_i, b_type = blocks[i].b_matrix()
         b_types.append(b_type)
         coords.append(coords_i)
-
+    
     index = [j for j in range(len(coords)) if contact_position in coords[j]][0]
     block = blocks[index]
 
@@ -55,9 +55,6 @@ def check_special(contact_position, lazor_path_list, lazor_dir_list, lazor_num, 
     # xycontact_position = [contact_position[1], contact_position[0]]
     # print('xycontact_position', xycontact_position)
     if set(contact_position) == set(lazor_path_list[lazor_num][0]):
-        print("special")
-        print("contact_side", contact_side)
-        print("lazor_dir_list[lazor_num][0]", lazor_dir_list[lazor_num][0])
         if lazor_dir_list[lazor_num][0] == [1, -1] and contact_side == 4 or lazor_dir_list[lazor_num][0] == [1, -1] and contact_side == 1:
             special = True
         if lazor_dir_list[lazor_num][0] == [1, 1] and contact_side == 4 or lazor_dir_list[lazor_num][0] == [1, 1] and contact_side == 2:
@@ -88,9 +85,8 @@ def add_to_lazor_path(block,contact_position, m, lazor_path_list, lazor_dir_list
 #    print("contact_side", contact_side)
 #    print("lazor_path_list[lazor_num][0]", lazor_path_list[lazor_num][0])
 #    print("lazor_dir_list[lazor_num][0]", lazor_dir_list[lazor_num][0])
-    if check_special(contact_position, lazor_path_list, lazor_dir_list, lazor_num, new_x_dir, new_y_dir, contact_index, contact_side) == True:
-        print("hereeeee")
-        return lazor_path_list, lazor_dir_list, m, True
+#    if check_special(contact_position, lazor_path_list, lazor_dir_list, lazor_num, new_x_dir, new_y_dir, contact_index, contact_side) == True:
+#        return lazor_path_list, lazor_dir_list, m, True
 
 
     # starts saying where the lazor hits the block
@@ -150,15 +146,12 @@ def lazor_contact_tuple(m, b, lazor_path_list, lazor_dir_list, lazor_num, used_c
 
     # element wise product to find overlapping indices of lazor and block
     matrix_prod = np.multiply(m, b)
-    print(matrix_prod)
-
 
     if np.count_nonzero(matrix_prod) >= 1:
         contact_pos = [[i, j] for i in range(len(matrix_prod[0])) for j in range(len(matrix_prod)) if matrix_prod[j][i] >= 2]
     else:
         contact_pos = []
     
-    print('contact_pos', contact_pos)
     # print("used contact", used_contact_pos)
     # make sure contact_pos list doesnt already exist in used contact pos
     contact_pos = [contact_pos[i] for i in range(len(contact_pos)) if contact_pos[i] not in used_contact_pos]
@@ -166,19 +159,12 @@ def lazor_contact_tuple(m, b, lazor_path_list, lazor_dir_list, lazor_num, used_c
     # add to used_contact_pos list to avoid repeats
     
     if len(contact_pos) > 0:
-        print("contact_pos[0]", contact_pos[0])
-        print(type(contact_pos[0]))
-        print(type(lazor_path_list[lazor_num][0]))
-        print("lazor_path_list[lazor_num]", lazor_path_list[lazor_num])
-        print("lazor_path_list[lazor_num]", lazor_path_list)
         try:
-            print('try')
             index = lazor_path_list[lazor_num].index(contact_pos[0])
             x_dir, y_dir = lazor_dir_list[lazor_num][index]
             
             
         except ValueError:
-            print('except')
             index = lazor_path_list.index(contact_pos[0])
             x_dir, y_dir = lazor_dir_list[index]
         
@@ -212,12 +198,12 @@ def lazor_contact_tuple(m, b, lazor_path_list, lazor_dir_list, lazor_num, used_c
         x_dir = None
         y_dir = None
     
-    print("contact list", contact_pos)
+
     return first_contact_pos, x_dir, y_dir, contact_index, contact_side, contact_pos, used_contact_pos
 
 
 
-def valid_positions(lazor_path, blocks_allowed):
+def valid_positions(lazor_path, blocks_allowed, Grid):
     '''
     This function takes in the lazor path, converts it to blocks
     '''
@@ -242,9 +228,12 @@ def valid_positions(lazor_path, blocks_allowed):
 
     blockList = [[blockList[i][0]+1, blockList[i][1]+1] for i in range(len(blockList))]
 
-    lazor_blocks = [list(x) for x in set(tuple(x) for x in blockList)]
+    #lazor_blocks = [list(x) for x in set(tuple(x) for x in blockList)]
     common_blocks = [list(x) for x in set(tuple(x) for x in blockList).intersection(set(tuple(x) for x in blocks_allowed))]
-    return common_blocks
+    print(common_blocks)
+    common_blocks_num = [coord_to_num(Grid,common_blocks[i]) for i in range(len(common_blocks))]
+    print(common_blocks_num)
+    return common_blocks_num
 
 def refract_branches(lazor_path_list,lazor_dir_list,lazor_num):
     # only for refract blocks - split parent lazor path into two branches and return
@@ -266,13 +255,11 @@ def refract_branches(lazor_path_list,lazor_dir_list,lazor_num):
         branch_2_dir = parent_dir + lazor_dir_list[lazor_num][refract_index[1]:len(a)]
         branch = True
 
-        return parent, branch_1, branch_2, branch_1_dir, branch_2_dir, branch
+    return parent, branch_1, branch_2, branch_1_dir, branch_2_dir, branch
 
 
 def change_refract_branches(branch_1, branch_2, branch_1_dir, branch_2_dir, contact_position):
-    # keep refracted branch on Lazor Path
 
-    print(contact_position)
     if contact_position in branch_1:
         print(branch_2, branch_2_dir)
         return branch_2, branch_2_dir
@@ -283,13 +270,13 @@ def change_refract_branches(branch_1, branch_2, branch_1_dir, branch_2_dir, cont
 
 def coord_to_num(Grid, coord):
     
-    r = len(Grid)+1
+    r = len(Grid)
     c = len(Grid[0])
 
     dim = r*c
 
-    coords = [[j+1, i+1] for i in range(r) for j in range(c)]
-    nums = [i+1 for i in range(dim+1)]
+    coords = [[i+1, j+1] for j in range(r) for i in range(c)]
+    nums = [i+1 for i in range(dim)]
 
     index = coords.index(coord)
     return nums[index]
@@ -297,32 +284,35 @@ def coord_to_num(Grid, coord):
 
 def num_to_coord(Grid, num):
 
-    r = len(Grid)+1
+    r = len(Grid)
     c = len(Grid[0])
-    print('r', r)
-    print('c', c)
     dim = r*c
 
     coords = [[j+1, i+1] for i in range(r) for j in range(c)]
 
-    nums = [i+1 for i in range(dim+1)]
-    print(nums)
+    nums = [i+1 for i in range(dim)]
+
     index = nums.index(num)
     return coords[index]
 
-def get_combos(Blocks, numList):
+def get_combos(Blocks, numList, common_blocks_num, Grid):
     '''
     This function takes in a list of block IDs and coordinate IDs and returns
     all of the possible combinations
     '''
+    print("here")
     a = list(permutations(Blocks, len(Blocks)))
     b = list(combinations(numList, len(Blocks)))
     combos_with_reps = []
+ 
+
 
     for i in range(len(a)):
         for j in range(len(b)):
-            combos_with_reps.append(a[i]+b[j])
+            if any(x in common_blocks_num for x in b[j]):
+                combos_with_reps.append(a[i]+b[j])
+
     combos = list(set(combos_with_reps))
+    print(len(combos))
 
     return combos
-

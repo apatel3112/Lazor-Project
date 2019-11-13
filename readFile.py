@@ -3,7 +3,9 @@
 """
 Created on Sat Nov  9 17:49:56 2019
 
+
 @author: Ben
+
 """
 import numpy as np
 from Block import Block
@@ -11,11 +13,13 @@ from Block import Block
 def read_file(file_name):
     '''
         this function reads the file and outputs corresponding matricies
+
         Inputs:
             file_name: string: name of the file to be read
         Outputs:
             Grid - original grid displayed in lazor file
             Blocks - List of the number of each block type available
+
             Lazor_Path: nested list: list with all of the lazor paths
             Lazor_Dir: nested list: list with all of the directions
             m: matrix for the lazor, 2s represent lazor path
@@ -29,8 +33,7 @@ def read_file(file_name):
     B = 0  # number of opqaue blocks
     C = 0  # number of refrect blocks
     P = []  # list of target position coordinates
-    L = []  # lazor information
-       
+    L = []  # lazor information       
 
     file = open(file_name, "r")
     lines = file.readlines()
@@ -46,9 +49,11 @@ def read_file(file_name):
             j = lines[b].strip('\n')
             while j != "GRID STOP":
                 r = j.replace(" ", "")  #remove any spaces inbetween blocks
+
                 Grid.append(r)
                 b = b+1
                 j = lines[b].strip('\n')
+
 
     #loop through the remaining lines in file
     for i in range(b+1, len(lines)):
@@ -80,8 +85,10 @@ def read_file(file_name):
                         d4 = int(line[8])
                 L.append((int(line[2]), int(line[4]), d3, d4))
 
+
         except IndexError:
             continue
+
 
     #Load number of block types to Blocks list
     Blocks = [A, B, C]
@@ -94,7 +101,7 @@ def read_file(file_name):
     # create empty matrices based on grid size
     row = len(Grid)
     col = len(Grid[0])
-    Grid = [b.replace('B', 'A') for b in Grid]
+
 
     m = []
     for i in range(len(L)):
@@ -198,13 +205,9 @@ def read_file(file_name):
     P = list(P)
     for i in range(len(P)):
         t[P[i][1]][P[i][0]] = 1
-
-    
+   
 
 
     return Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t
 
-
-
-    
 
