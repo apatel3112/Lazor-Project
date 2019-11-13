@@ -9,11 +9,10 @@ from PIL import Image, ImageDraw, ImageFont
 from Block import Block
 import io
 
+
 def new_lazor_path(Lazor_Path):
-    
 
     New_Lazor_Path = []
-       
     for lazor in (Lazor_Path):
         repeated_points = [0]
         for i in range(1, len(lazor)):
@@ -26,10 +25,7 @@ def new_lazor_path(Lazor_Path):
             New_Lazor_Path.append(new_lazor)
     
     return New_Lazor_Path  
-    
-    #print(New_Lazor_Path)
-    #print(len(New_Lazor_Path))
-    #print(repeated_points)       
+     
     
 
 
@@ -68,7 +64,7 @@ def save_file(file_name, Grid, blocks, Lazor_Path, P):
     #replace grid elements with new block types
     solved_grid = Grid    
     for i in range(len(block_pos)):
-        solved_grid[block_pos[i][0]-1][block_pos[i][1]-1] = block_type[i]
+        solved_grid[block_pos[i][1]-1][block_pos[i][0]-1] = block_type[i]
     
     
     #print(solved_grid)
@@ -134,7 +130,7 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
             if solved_grid[i][j] == 'x':
                 for w in range(j*blocksize, (j+1)*blocksize):
                     for h in range(i*blocksize, (i+1)*blocksize):
-                        img.putpixel((w, h), (255, 0, 0))
+                        img.putpixel((w, h), (255, 255, 255))
                 draw = ImageDraw.Draw(img)
                 draw.text((j*blocksize, (i+0.5)*blocksize), "No Block Allowed", fill=(0, 0, 0), font=font)
     
