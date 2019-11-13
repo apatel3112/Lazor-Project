@@ -114,25 +114,25 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
                     for h in range(i*blocksize, (i+1)*blocksize):
                         img.putpixel((w, h), (179, 179, 179))
                 draw = ImageDraw.Draw(img)
-                draw.text((j*blocksize, (i+0.5)*blocksize), "Reflect Block", fill=(0, 0, 0), font=font)
+                draw.text((j*blocksize+20, (i+0.5)*blocksize-7), "Reflect Block", fill=(0, 0, 0), font=font)
             if solved_grid[i][j] == 'opaque':
                 for w in range(j*blocksize, (j+1)*blocksize):
                     for h in range(i*blocksize, (i+1)*blocksize):
                         img.putpixel((w, h), (0, 0, 0))
                 draw = ImageDraw.Draw(img)
-                draw.text((j*blocksize, (i+0.5)*blocksize), "Opaque Block", fill=(255, 255, 255), font=font)
+                draw.text((j*blocksize+20, (i+0.5)*blocksize-7), "Opaque Block", fill=(255, 255, 255), font=font)
             if solved_grid[i][j] == 'refract':
                 for w in range(j*blocksize, (j+1)*blocksize):
                     for h in range(i*blocksize, (i+1)*blocksize):
                         img.putpixel((w, h), (220, 220, 220))
                 draw = ImageDraw.Draw(img)
-                draw.text((j*blocksize, (i+0.5)*blocksize), "Refract Block", fill=(0, 0, 0), font=font)
+                draw.text((j*blocksize+20, (i+0.5)*blocksize-7), "Refract Block", fill=(0, 0, 0), font=font)
             if solved_grid[i][j] == 'x':
                 for w in range(j*blocksize, (j+1)*blocksize):
                     for h in range(i*blocksize, (i+1)*blocksize):
                         img.putpixel((w, h), (255, 255, 255))
                 draw = ImageDraw.Draw(img)
-                draw.text((j*blocksize, (i+0.5)*blocksize), "No Block Allowed", fill=(0, 0, 0), font=font)
+                draw.text((j*blocksize+11, (i+0.5)*blocksize-7), "No Block Allowed", fill=(0, 0, 0), font=font)
     
     
     
@@ -186,8 +186,7 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
     #save image
     img.save("%s_%s" % ("solved", file_name))
                 
-    img.show()  
-    
+    img.show() 
     
     
     
