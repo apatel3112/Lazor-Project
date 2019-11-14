@@ -112,7 +112,7 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
             if solved_grid[i][j] == 'reflect':
                 for w in range(j*blocksize, (j+1)*blocksize):
                     for h in range(i*blocksize, (i+1)*blocksize):
-                        img.putpixel((w, h), (179, 179, 179))
+                        img.putpixel((w, h), (169, 169, 169))
                 draw = ImageDraw.Draw(img)
                 draw.text((j*blocksize+20, (i+0.5)*blocksize-7), "Reflect Block", fill=(0, 0, 0), font=font)
             if solved_grid[i][j] == 'opaque':
@@ -159,7 +159,7 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
         
     
     New_Lazor_Path = new_lazor_path(Lazor_Path) 
-    print(New_Lazor_Path)
+    #print(New_Lazor_Path)
     
     #draw a red line between every point on the lazor_path    
     for i in range(len(New_Lazor_Path)):
