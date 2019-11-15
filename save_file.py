@@ -37,11 +37,14 @@ def new_lazor_path(Lazor_Path):
 
         # break each lazor down into lists between each repeated_postioin index
         # and add each list to new lazor path variable
+
         for i in range(1, len(repeated_points)):
             new_lazor = lazor[repeated_points[i-1]:repeated_points[i]]
             New_Lazor_Path.append(new_lazor)
 
+
     #return new lazor path variable
+
     return New_Lazor_Path
 
 
@@ -66,6 +69,7 @@ def save_file(file_name, Grid, blocks, Lazor_Path, P):
 
     # loop through each block object and load its postiion and type into their
     # respective vriables
+
     for i in blocks:
         block_pos.append(i.pos())
         block_type.append(i.get_type())
@@ -93,6 +97,7 @@ def save_file(file_name, Grid, blocks, Lazor_Path, P):
     new_file.close()
     file_name = file_name.replace("txt", "png")
 
+
     # convert the solved grid into an iamge of the solved board
     load_image(file_name, solved_grid, Lazor_Path, P)
 
@@ -109,7 +114,6 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
     Outputs:
         image od solved board
     '''
-
     # define size of the lazor board image
     width = len(solved_grid[0])*blocksize
     height = len(solved_grid)*blocksize
