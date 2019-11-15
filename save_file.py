@@ -5,7 +5,6 @@ Created on Tue Nov 12 00:14:18 2019
 @author: bento
 """
 from PIL import Image, ImageDraw, ImageFont
-from Block import Block
 import io
 
 
@@ -13,7 +12,7 @@ def new_lazor_path(Lazor_Path):
     '''
     Thsi function breaks the solved lazor_path into a list of lists which has
     elements that differ by onnly one in either the x or y direction
-    
+
     Inputs:
         lazor_path: solved lazor path from solver function. Length equal to
         number of lazors
@@ -42,9 +41,7 @@ def new_lazor_path(Lazor_Path):
             new_lazor = lazor[repeated_points[i-1]:repeated_points[i]]
             New_Lazor_Path.append(new_lazor)
 
-
-    #return new lazor path variable
-
+    # return new lazor path variable
     return New_Lazor_Path
 
 
@@ -96,7 +93,6 @@ def save_file(file_name, Grid, blocks, Lazor_Path, P):
     # close the new file
     new_file.close()
     file_name = file_name.replace("txt", "png")
-
 
     # convert the solved grid into an iamge of the solved board
     load_image(file_name, solved_grid, Lazor_Path, P)
@@ -156,12 +152,12 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
                         img.putpixel((w, h), (255, 255, 255))
                 draw = ImageDraw.Draw(img)
                 draw.text((j*blocksize+11, (i+0.5)*blocksize-7), "No Block Allowed", fill=(0, 0, 0), font=font)
-                
-    # define the start point of each lazor          
+
+    # define the start point of each lazor
     Lazor_Start = []
     for i in Lazor_Path:
         Lazor_Start.append(i[0])
-        
+
     # mark each lazor start position with a red dot
     for i in Lazor_Start:
         draw = ImageDraw.Draw(img)
@@ -169,8 +165,8 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
         y = i[1]*blocksize/2
         r = 3
         draw.ellipse((x-r, y-r, x+r, y+r), fill=(255, 0, 0))
-    
-    # draww black grid on image to separate blocks    
+
+    # draww black grid on image to separate blocks
     draw = ImageDraw.Draw(img)
     for x in range(len(solved_grid[0])+1):
         draw.line((x*blocksize, 0, x*blocksize, height), (0, 0, 0))
@@ -190,7 +186,7 @@ def load_image(file_name, solved_grid, Lazor_Path, P, blocksize=120):
             y2 = New_Lazor_Path[i][j+1][1]
             draw = ImageDraw.Draw(img)
             draw.line((x1*blocksize/2, y1*blocksize/2, x2*blocksize/2, y2*blocksize/2), (255, 0, 0))
-    
+
     # mark lazor targets as black dots
     for i in P:
         draw = ImageDraw.Draw(img)
