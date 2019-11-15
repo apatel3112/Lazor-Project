@@ -251,7 +251,21 @@ def valid_positions(lazor_path, blocks_allowed, Grid):
 
 
 def refract_branches(lazor_path_list, lazor_dir_list, lazor_num):
-
+    '''
+        This function keeps track of branched lazor path after hit by refracted blocks
+        Input:
+            lazor_path_list: Lazor Path
+            lazor_dir_list: Lazor Dir
+            Contact List: Refracted points
+            
+        Output
+            Parent: Lazor Path before branching
+            Branch 1: First lazor branch
+            Branch 2: Second Lazor branch
+            branch_1_dir: First branch direction
+            branch_2_dir: Second branch direction
+            branch: Indicates if branch exists
+        '''
     a = [tuple(lazor_path_list[lazor_num][i]) for i in range(len(lazor_path_list[lazor_num]))]
     frequency = Counter(a)
     points = list(frequency.keys())
@@ -281,7 +295,19 @@ def refract_branches(lazor_path_list, lazor_dir_list, lazor_num):
 
 
 def change_refract_branches(branch_1, branch_2, branch_1_dir, branch_2_dir, contact_position):
-
+        '''
+        This function keeps track of branched lazor path after hit by refracted blocks
+        Input:
+            Branch 1: First lazor branch
+            Branch 2: Second Lazor branch
+            branch_1_dir: First branch direction
+            branch_2_dir: Second branch direction
+            contact_position: Intersection coordinate of Lazor and block
+            
+        Output
+            Returns branch 1 or 2 based on which branch contact position is located in
+        '''
+    
     if contact_position in branch_1:
 
         return branch_2, branch_2_dir
@@ -292,6 +318,17 @@ def change_refract_branches(branch_1, branch_2, branch_1_dir, branch_2_dir, cont
 
 
 def block_behind_lazor(Lazor_Path,Lazor_Dir,Grid):
+    '''
+        This function returns block numbers behind and in front of Lazors
+        Input:
+            Lazor_Path: Lazor Path
+            Lazor_Dir: Lazor Direction
+            Grid: Grid size
+            
+        Output
+            Behind: Block number of block behind lazor
+            Forward: Block number of block in front of Lazor
+        '''
     r = len(Grid)
     c = len(Grid[0])
 
@@ -365,7 +402,7 @@ def coord_to_num(Grid, coord):
     This function take in the grid and coordinate and assigns them the
     coorelating number values
         inputs
-            Grid: list, lsit of grid
+            Grid: list, list of grid
             coord: tuple, coordinate value
         outputs
             nums[index]: int, coorelating int
@@ -435,7 +472,16 @@ def get_combos(Blocks, numList, common_blocks_num, Grid, behind, forward):
 
 
 def check_inside(x_dir,y_dir,contact_side):
-
+    '''
+    Checks if Lazor is cycling inside block
+    
+        inputs
+            x_dir: x direction of Lazor
+            y_dir: y direction of Lazor
+            contact side: side that lazor first hits block
+        outputs
+            True or False to check if Lazor inside block
+    '''
     if contact_side == 1 and y_dir == -1:
         return True
     elif contact_side == 3 and x_dir == -1:
