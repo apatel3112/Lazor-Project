@@ -1,25 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Nov  9 17:49:56 2019
+Anusha Patel, Ben Toler, Madeline Noble
 
-
-@author: Ben
-
+This file contains functions that read the BFF file and converts the
+information into matricies and lists that the solver can use
 """
 import numpy as np
 from Block import Block
 
+
 def read_file(file_name):
     '''
         this function reads the file and outputs corresponding matricies
-
-        Inputs:
+        input
             file_name: string: name of the file to be read
-        Outputs:
-            Grid - original grid displayed in lazor file
-            Blocks - List of the number of each block type available
-
+        output
+            Blocks
             Lazor_Path: nested list: list with all of the lazor paths
             Lazor_Dir: nested list: list with all of the directions
             m: matrix for the lazor, 2s represent lazor path
@@ -33,65 +30,52 @@ def read_file(file_name):
     B = 0  # number of opqaue blocks
     C = 0  # number of refrect blocks
     P = []  # list of target position coordinates
-    L = []  # lazor information       
+    L = []  # lazor information
 
     file = open(file_name, "r")
     lines = file.readlines()
-    
-    #loop through each line of file unitl GRID START is reached
+    # these for loops read and process the input file accordingly
     for i in range(len(lines)):
-        #assign line to variable 
-        line = lines[i].strip('\n')
+        a = lines[i].strip('\n')
 
-        #inbetween GRID START and STOP, appedn lines to Grid list
-        if line == "GRID START":
+        if a == "GRID START":
             b = i+1
             j = lines[b].strip('\n')
             while j != "GRID STOP":
-                r = j.replace(" ", "")  #remove any spaces inbetween blocks
-
+                r = j.replace(" ", "")
                 Grid.append(r)
                 b = b+1
                 j = lines[b].strip('\n')
 
-
-    #loop through the remaining lines in file
     for i in range(b+1, len(lines)):
-        line = lines[i].strip('\n')
-        #check first element in each line for desried variable
-        #assign value in file to variable in code
+        a = lines[i].strip('\n')
         try:
-            if line[0] == "A":
-                A = int(line[2])
-            elif line[0] == "B":
-                B = int(line[2])
-            elif line[0] == "C":
-                C = int(line[2])
-            elif line[0] == "P":
-                P.append([int(line[2]), int(line[4])])
+            if a[0] == "A":
+                A = int(a[2])
+            elif a[0] == "B":
+                B = int(a[2])
+            elif a[0] == "C":
+                C = int(a[2])
+            elif a[0] == "P":
+                P.append([int(a[2]), int(a[4])])
 
-            elif line[0] == "L":
-                if line[6] == "-":
-                    d3 = -1*int(line[7])
-                    if line[9] == "-":
-                        d4 = -1*int(line[10])
+            elif a[0] == "L":
+                if a[6] == "-":
+                    d3 = -1*int(a[7])
+                    if a[9] == "-":
+                        d4 = -1*int(a[10])
                     else:
-                        d4 = int(line[9])
+                        d4 = int(a[9])
                 else:
-                    d3 = int(line[6])
-                    if line[8] == "-":
-                        d4 = -1*int(line[9])
+                    d3 = int(a[6])
+                    if a[8] == "-":
+                        d4 = -1*int(a[9])
                     else:
-                        d4 = int(line[8])
-                L.append((int(line[2]), int(line[4]), d3, d4))
-
+                        d4 = int(a[8])
+                L.append((int(a[2]), int(a[4]), d3, d4))
 
         except IndexError:
             continue
-
-
-    #Load number of block types to Blocks list
-    Blocks = [A, B, C]
 
     Lazor_Path = []
     Lazor_Dir = []
@@ -101,7 +85,6 @@ def read_file(file_name):
     # create empty matrices based on grid size
     row = len(Grid)
     col = len(Grid[0])
-
 
     m = []
     for i in range(len(L)):
@@ -158,6 +141,8 @@ def read_file(file_name):
 
     # adds possions to the b matrix not accessible to matrix
     not_allowed = [[i, j] for i in range(len(Grid[0])) for j in range(len(Grid)) if Grid[j][i] == 'x']
+    print(Grid)
+    print('na', not_allowed)
     for y in range(len(not_allowed)):
         b[1+((not_allowed[y][1])*2)][((not_allowed[y][0])*2)] = -1
         b[((not_allowed[y][1])*2)][1+((not_allowed[y][0])*2)] = -1
@@ -166,7 +151,7 @@ def read_file(file_name):
 
     # return vector of positions x and y not allowed to place blocks
     not_allowed.extend(fixed_blocks)
-
+    
     # create vectors for x and y directions if more than 1 Lazor
     j = []
     k = []
@@ -205,9 +190,7 @@ def read_file(file_name):
     P = list(P)
     for i in range(len(P)):
         t[P[i][1]][P[i][0]] = 1
-   
 
+    Blocks = [A, B, C]
 
-    return Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t
-
-
+    return Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t, P
