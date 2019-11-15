@@ -19,7 +19,7 @@ class TestStringMethods(unittest.TestCase):
         common_blocks_num = [1, 2]
         Grid = ['oooo', 'oooo', 'oooo', 'oooo']
         combos = [('B', 'R', 2, 3), ('B', 'R', 1, 2), ('R', 'B', 1, 2), ('R', 'B', 2, 3)]
-        behind =  [1, 4]
+        behind = [1, 4]
         forward = [3, 8]
         self.assertEqual(functions.get_combos(Blocks, numList, common_blocks_num, Grid, behind, forward), combos)
 

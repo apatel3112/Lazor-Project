@@ -141,8 +141,7 @@ def read_file(file_name):
 
     # adds possions to the b matrix not accessible to matrix
     not_allowed = [[i, j] for i in range(len(Grid[0])) for j in range(len(Grid)) if Grid[j][i] == 'x']
-    print(Grid)
-    print('na', not_allowed)
+
     for y in range(len(not_allowed)):
         b[1+((not_allowed[y][1])*2)][((not_allowed[y][0])*2)] = -1
         b[((not_allowed[y][1])*2)][1+((not_allowed[y][0])*2)] = -1
