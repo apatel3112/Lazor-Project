@@ -295,25 +295,24 @@ def refract_branches(lazor_path_list, lazor_dir_list, lazor_num):
 
 
 def change_refract_branches(branch_1, branch_2, branch_1_dir, branch_2_dir, contact_position):
-        '''
-        This function keeps track of branched lazor path after hit by refracted blocks
-        Input:
-            Branch 1: First lazor branch
-            Branch 2: Second Lazor branch
-            branch_1_dir: First branch direction
-            branch_2_dir: Second branch direction
-            contact_position: Intersection coordinate of Lazor and block
-            
-        Output
-            Returns branch 1 or 2 based on which branch contact position is located in
-        '''
+    '''
+    This function keeps track of branched lazor path after hit by refracted blocks
+    Input:
+        Branch 1: First lazor branch
+        Branch 2: Second Lazor branch
+        branch_1_dir: First branch direction
+        branch_2_dir: Second branch direction
+        contact_position: Intersection coordinate of Lazor and block
+        
+    Output
+        Returns branch 1 or 2 based on which branch contact position is located in
+    '''
     
     if contact_position in branch_1:
-
         return branch_2, branch_2_dir
     elif contact_position in branch_2:
-
         return branch_1, branch_1_dir
+    
     return None, None
 
 
