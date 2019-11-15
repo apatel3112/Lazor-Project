@@ -1,13 +1,14 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Nov  9 17:49:56 2019
+Anusha Patel, Ben Toler, Madeline Noble
 
-@author: Anusha
+This file contains functions that read the BFF file and converts the
+information into matricies and lists that the solver can use
 """
 import numpy as np
 from Block import Block
+
 
 def read_file(file_name):
     '''
@@ -140,6 +141,8 @@ def read_file(file_name):
 
     # adds possions to the b matrix not accessible to matrix
     not_allowed = [[i, j] for i in range(len(Grid[0])) for j in range(len(Grid)) if Grid[j][i] == 'x']
+    print(Grid)
+    print('na', not_allowed)
     for y in range(len(not_allowed)):
         b[1+((not_allowed[y][1])*2)][((not_allowed[y][0])*2)] = -1
         b[((not_allowed[y][1])*2)][1+((not_allowed[y][0])*2)] = -1
@@ -148,7 +151,7 @@ def read_file(file_name):
 
     # return vector of positions x and y not allowed to place blocks
     not_allowed.extend(fixed_blocks)
-
+    
     # create vectors for x and y directions if more than 1 Lazor
     j = []
     k = []
@@ -190,4 +193,4 @@ def read_file(file_name):
 
     Blocks = [A, B, C]
 
-    return Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t
+    return Grid, fixed_Blocks, Blocks, Lazor_Path, Lazor_Dir, m, b, not_allowed, t, P
