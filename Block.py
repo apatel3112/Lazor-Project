@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Nov  9 17:52:08 2019
-
-@author: Anusha
+This class defines a block object and allows you to perform different
+operations with this block
 """
-import numpy as np
-import random
-from collections import Counter
-
 
 class Block():
 
@@ -44,7 +39,7 @@ class Block():
             block type
         '''
         return self.block_type
-    
+
     def pos(self):
         '''
         function that returns the type of block that we have
@@ -125,6 +120,4 @@ class Block():
             if self.block_type == "reflect":
                 delete_after_contact = True
 
-
         return new_x_dir, new_y_dir, delete_after_contact
-
